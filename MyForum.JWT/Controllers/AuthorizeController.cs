@@ -25,7 +25,7 @@ namespace MyForum.JWT.Controllers
 		}
 		[HttpPost("login")]
 
-		public async Task<APIResult> Login(string username,string password)
+		public async Task<APIResult> Login([FromForm] string username, [FromForm] string password)
 		{
 			//string pwd = MD5Helper.MD5Encrypt32(password);
 			var user = await iUserService.FindAsync(c => c.Username == username && c.Password == password);

@@ -49,7 +49,7 @@ namespace MyForum.JWT
 			#endregion
 			builder.Services.AddCors(options => {
 				options.AddPolicy(name: myPloicy, policy => {
-					policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyHeader();
+					policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
 				});
 			});
 			var app = builder.Build();
@@ -60,6 +60,10 @@ namespace MyForum.JWT
 				app.UseSwagger();
 				app.UseSwaggerUI();
 			}
+			app.UseHttpsRedirection();
+			app.UseStaticFiles();
+			app.UseRouting();
+			app.UseCors(myPloicy);
 			app.MapControllers();
 			app.UseAuthentication();
 			app.UseAuthorization();

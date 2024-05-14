@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MyForum.BLL.Interface;
 using MyForum.JWT.APIResultFile;
@@ -10,8 +11,9 @@ using System.Text;
 
 namespace MyForum.JWT.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("/")]
 	[ApiController]
+	[EnableCors("MyPolicy")]
 	public class AuthorizeController : ControllerBase
 	{
 		private readonly IUserService iUserService;

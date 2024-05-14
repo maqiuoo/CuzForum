@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using MyForum.BLL.Interface;
 using MyForum.JWT.APIResultFile;
 using MyForum.JWT.Utility;
+using MyForum.JWT.Utility.APIResultFile;
 using MyForum.Model;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -23,7 +24,8 @@ namespace MyForum.JWT.Controllers
 			this.iUserService = iUserService;
 		}
 		[HttpPost("login")]
-		public async Task<APIResult> Login(string username, string password)
+
+		public async Task<APIResult> Login(string username,string password)
 		{
 			//string pwd = MD5Helper.MD5Encrypt32(password);
 			var user = await iUserService.FindAsync(c => c.Username == username && c.Password == password);
@@ -54,12 +56,12 @@ namespace MyForum.JWT.Controllers
 		}
 
 		[HttpPost("register")]
-		public async Task<APIResult> Register(string username, string password)
+		public async Task<APIResult> Register([FromBody] Requst req)
 		{
-			var user = await iUserService.FindAsync(c => c.Username == username);
+			var user = await iUserService.FindAsync(c => c.Username == req.Username);
 			if(user == null)
 			{
-				User u = new User() {Username = username,Password=password,InTime = DateTime.Now };
+				User u = new User() {Username = req.Username, Password= req.Password, InTime = DateTime.Now };
 				bool b = await iUserService.CreateAsync(u);
 				if (b)
 				{

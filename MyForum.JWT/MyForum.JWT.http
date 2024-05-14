@@ -1,0 +1,6 @@
+@MyForum.JWT_HostAddress = http://localhost:5108
+
+GET {{MyForum.JWT_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

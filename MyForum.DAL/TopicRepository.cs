@@ -16,10 +16,10 @@ namespace MyForum.DAL
 		{
 		}
 
-		public Task<List<Topic>> FindAll(int pageNo, int pageSize, string tab)
+		public async Task<List<Topic>> FindAll(int pageNo, int pageSize, string tab)
 		{
-			var topics = dbctx.Topics.Where(t => t.Tab == tab).Skip(pageSize).Take(pageSize);
-			return (Task<List<Topic>>)topics;
+			var topics = dbctx.Topics.Where(t => t.Tab == tab).Skip(pageNo).Take(pageSize).ToList();
+			return topics;
 		}
 
 		public async Task<Topic> FindByTitle(string title)
@@ -32,10 +32,10 @@ namespace MyForum.DAL
 			return await dbctx.Topics.FirstOrDefaultAsync(t => t.Url == url);
 		}
 
-		public Task<List<Topic>> FindByUserId(int userId, int pageNo, int pageSize)
+		public async Task<List<Topic>> FindByUserId(int userId, int pageNo, int pageSize)
 		{
-			var topics = dbctx.Topics.Where(t => t.UserId == userId).Skip(pageSize).Take(pageSize);
-			return (Task<List<Topic>>)topics;
+			var topics = dbctx.Topics.Where(t => t.UserId == userId).Skip(pageNo).Take(pageSize).ToList();
+			return topics;
 		}
 	}
 }

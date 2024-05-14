@@ -25,7 +25,7 @@ namespace MyForum.BLL
 
 		public Task<bool> EditAsync(T entity)
 		{
-			throw new NotImplementedException();
+			return baseRepository.EditAsync(entity);
 		}
 
 		public Task<T> FindAsync(int id)

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure;
+using Microsoft.EntityFrameworkCore;
 using MyForum.DAL.Interface;
 using MyForum.Model;
 using System;
@@ -12,7 +13,7 @@ namespace MyForum.DAL
 {
 	public class BaseRepository<T> : IBaseRepository<T> where T : class,IEntity,new() 
 	{
-		private readonly ModelDbContext dbctx;
+		protected readonly ModelDbContext dbctx;
 
 		public BaseRepository(ModelDbContext dbctx)
 		{
@@ -82,5 +83,6 @@ namespace MyForum.DAL
 		{
 			throw new NotImplementedException();
 		}
+
 	}
 }

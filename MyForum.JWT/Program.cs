@@ -21,7 +21,6 @@ namespace MyForum.JWT
 
 			// Add services to the container.
 			builder.Services.AddAuthorization();
-			string myPloicy = "MyPolicy";
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
@@ -47,6 +46,7 @@ namespace MyForum.JWT
 					};
 				});
 			#endregion
+			string myPloicy = "MyPolicy";
 			builder.Services.AddCors(options => {
 				options.AddPolicy(name: myPloicy, policy => {
 					policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();

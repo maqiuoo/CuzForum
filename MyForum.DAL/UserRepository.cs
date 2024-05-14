@@ -14,5 +14,11 @@ namespace MyForum.DAL
 		public UserRepository(ModelDbContext dbctx) : base(dbctx)
 		{
 		}
+
+		public List<User> FindTop100(int size)
+		{
+			var users = dbctx.Users.Take(size).ToList();
+			return users;
+		}
 	}
 }

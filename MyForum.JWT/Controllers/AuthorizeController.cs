@@ -27,8 +27,8 @@ namespace MyForum.JWT.Controllers
 
 		public async Task<APIResult> Login([FromForm] string username, [FromForm] string password)
 		{
-			//string pwd = MD5Helper.MD5Encrypt32(password);
-			var user = await iUserService.FindAsync(c => c.Username == username && c.Password == password);
+			string pwd = MD5Helper.MD5Encrypt32(password);
+			var user = await iUserService.FindAsync(c => c.Username == username && c.Password == pwd);
 			if (user != null)
 			{
 				var claims = new Claim[]
@@ -58,10 +58,11 @@ namespace MyForum.JWT.Controllers
 		[HttpPost("register")]
 		public async Task<APIResult> Register([FromForm] string username, [FromForm] string password)
 		{
+			string pwd = MD5Helper.MD5Encrypt32(password);
 			var user = await iUserService.FindAsync(c => c.Username == username);
 			if(user == null)
 			{
-				User u = new User() {Username = username, Password= password, InTime = DateTime.Now };
+				User u = new User() {Username = username, Password= pwd, InTime = DateTime.Now };
 				bool b = await iUserService.CreateAsync(u);
 				if (b)
 				{

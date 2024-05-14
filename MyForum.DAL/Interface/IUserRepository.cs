@@ -9,5 +9,6 @@ namespace MyForum.DAL.Interface
 {
 	public interface IUserRepository : IBaseRepository<User>
 	{
+		List<User> FindTop100(int size);
 	}
 }

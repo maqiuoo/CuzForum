@@ -19,5 +19,10 @@ namespace MyForum.BLL
 			base.baseRepository = userRepository;
 			this.userRepository = userRepository;
 		}
+
+		public List<User> FindTop100(int size)
+		{
+			return userRepository.FindTop100(size);
+		}
 	}
 }

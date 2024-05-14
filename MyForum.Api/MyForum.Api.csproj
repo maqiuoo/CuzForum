@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MyForum.BLL\MyForum.BLL.csproj" />
     <ProjectReference Include="..\MyForum.DAL\MyForum.DAL.csproj" />
     <ProjectReference Include="..\MyForum.Model\MyForum.Model.csproj" />

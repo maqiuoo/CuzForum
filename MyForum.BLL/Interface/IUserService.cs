@@ -9,5 +9,6 @@ namespace MyForum.BLL.Interface
 {
 	public interface IUserService : IBaseService<User>
 	{
+		List<User> FindTop100(int size);
 	}
 }

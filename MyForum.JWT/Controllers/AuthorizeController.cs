@@ -56,12 +56,12 @@ namespace MyForum.JWT.Controllers
 		}
 
 		[HttpPost("register")]
-		public async Task<APIResult> Register([FromBody] Requst req)
+		public async Task<APIResult> Register([FromForm] string username, [FromForm] string password)
 		{
-			var user = await iUserService.FindAsync(c => c.Username == req.Username);
+			var user = await iUserService.FindAsync(c => c.Username == username);
 			if(user == null)
 			{
-				User u = new User() {Username = req.Username, Password= req.Password, InTime = DateTime.Now };
+				User u = new User() {Username = username, Password= password, InTime = DateTime.Now };
 				bool b = await iUserService.CreateAsync(u);
 				if (b)
 				{

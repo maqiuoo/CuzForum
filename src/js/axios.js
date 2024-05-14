@@ -2,7 +2,7 @@ import axios from 'axios';
 import qs from 'qs';
 
 const Axios = axios.create({
-  baseURL: process.env.NODE_ENV === 'production' ? 'http://localhost:8080/' : 'http://localhost:8080/'
+  baseURL: process.env.NODE_ENV === 'production' ? 'http://localhost:5108' : 'http://localhost:5108'
 });
 
 Axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("accessToken");

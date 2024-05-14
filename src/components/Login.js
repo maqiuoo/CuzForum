@@ -9,31 +9,40 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      username: '',
+      password: '',
       redirect_url: '/',
       enable_redirect: false
     }
   }
 
-  login() {
-    const username = this.refs.username.value;
-    const password = this.refs.password.value;
+  handleInputChange = (event) => {
+    this.setState({
+      [event.target.name]: event.target.value
+    });
+  }
+
+  login = () => {
+    const { username, password } = this.state;
     Axios.post('/login', {
       username: username,
       password: password
     }).then(({ data }) => {
       if (data.code === 200) {
-        localStorage.setItem("accessToken", data.detail.token);
-        localStorage.setItem("username", username);
-        localStorage.setItem("admin", data.detail.admin);
-        Axios.defaults.headers.common['Authorization'] = "Bearer " + data.detail.token
-        this.props.dispatch(updateHeader())
-        this.setState({
-          enable_redirect: true
-        })
-      } else {
-        this.props.dispatch(showToast(data.description));
+        this.props.showToast('Login successful');
+
+        if (data.detail && typeof data.detail.token !== 'undefined') {
+          localStorage.setItem("accessToken", data.detail.token);
+          localStorage.setItem("username", username);
+          localStorage.setItem("admin", data.detail.admin);
+          Axios.defaults.headers.common['Authorization'] = "Bearer " + data.detail.token
+          this.props.updateHeader();
+          this.setState({
+            enable_redirect: true
+          })
+        }
       }
-    }).catch(err => this.props.dispatch(showToast(err.toString())));
+    }).catch(err => this.props.showToast(err.toString()));
   }
 
   render() {
@@ -45,17 +54,17 @@ class Login extends Component {
           <tbody>
             <tr>
               <th>用户名</th>
-              <td><input type="text" ref="username" placeholder="用户名" /></td>
+              <td><input type="text" name="username" value={this.state.username} onChange={this.handleInputChange} placeholder="用户名" /></td>
             </tr>
             <tr>
               <th>密码</th>
-              <td><input type="password" ref="password" placeholder="密码" /></td>
+              <td><input type="password" name="password" value={this.state.password} onChange={this.handleInputChange} placeholder="密码" /></td>
             </tr>
             <tr>
               <td colSpan="2" valign="middle">
                 <div className="action">
                   <span>没有帐号？<Link to="/register">去注册</Link></span>
-                  <button onClick={() => this.login()}>登录</button>
+                  <button onClick={this.login}>登录</button>
                 </div>
               </td>
             </tr>
@@ -66,6 +75,9 @@ class Login extends Component {
   }
 }
 
-export default connect((state) => {
-  return {}
-})(withRouter(Login))
+const mapDispatchToProps = {
+  showToast,
+  updateHeader
+};
+
+export default connect(null, mapDispatchToProps)(withRouter(Login));

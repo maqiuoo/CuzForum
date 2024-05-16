@@ -1,10 +1,14 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MyForum.BLL;
 using MyForum.BLL.Interface;
 using MyForum.DAL;
 using MyForum.DAL.Interface;
+using MyForum.JWT;
 using MyForum.Model;
+using System.Text;
 
 namespace MyForum.Api
 {
@@ -27,11 +31,29 @@ namespace MyForum.Api
 			builder.Services.AddScoped<ITopicService, TopicService>();
 			builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 			builder.Services.AddScoped<ICommentService, CommentService>();
-			//builder.Services.AddScoped<IBlogNewsService, BlogNewsService>();
-			//builder.Services.AddScoped<ITypeInfoRepository, TypeInfoRepository>();
-			//builder.Services.AddScoped<ITypeInfoService, TypeInfoService>();
-			//builder.Services.AddScoped<IWriterInfoRepository, WriterInfoRepository>();
-			//builder.Services.AddScoped<IWriterInfoService, WriterInfoService>();
+			builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+			builder.Services.AddScoped<INotificationService, NotificationService>();
+			builder.Services.AddScoped<ICollectRepository, CollectRepository>();
+			builder.Services.AddScoped<ICollectService, CollectService>();
+			builder.Services.AddScoped<IAccessTokenRepository, AccessTokenRepository>();
+			builder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
+
+			#region JWT
+			builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWT"));
+			builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+				.AddJwtBearer(opt => {
+					var jwtSettings = builder.Configuration.GetSection("JWT").Get<JWTSettings>();
+					byte[] keyBytes = Encoding.UTF8.GetBytes(jwtSettings.SecKey);
+					var secKey = new SymmetricSecurityKey(keyBytes);
+					opt.TokenValidationParameters = new() {
+						ValidateIssuer = false,
+						ValidateAudience = false,
+						ValidateLifetime = true,
+						ValidateIssuerSigningKey = true,
+						IssuerSigningKey = secKey
+					};
+				});
+			#endregion
 			builder.Services.AddDbContext<ModelDbContext>(options => {
 				options.UseSqlServer("Server=.;DataBase=MyForum;Trusted_Connection=True;TrustServerCertificate=true;");
 			});
@@ -54,8 +76,8 @@ namespace MyForum.Api
 			app.UseRouting();
 			app.UseCors(myPloicy);
 			app.MapControllers();
+			app.UseAuthentication();
 			app.UseAuthorization();
-
 
 			app.Run();
 		}

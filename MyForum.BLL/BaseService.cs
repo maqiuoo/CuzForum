@@ -18,7 +18,7 @@ namespace MyForum.BLL
 			return baseRepository.CreateAsync(entity);
 		}
 
-		public Task<bool> DeleteAsync(int id)
+		public virtual Task<bool> DeleteAsync(int id)
 		{
 			return baseRepository.DeleteAsync(id);
 		}

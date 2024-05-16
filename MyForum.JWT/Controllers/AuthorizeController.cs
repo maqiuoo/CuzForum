@@ -4,7 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using MyForum.BLL.Interface;
 using MyForum.JWT.APIResultFile;
 using MyForum.JWT.Utility;
-using MyForum.JWT.Utility.APIResultFile;
 using MyForum.Model;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

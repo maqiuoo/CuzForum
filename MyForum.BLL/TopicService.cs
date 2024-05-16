@@ -12,11 +12,15 @@ namespace MyForum.BLL
 	public class TopicService : BaseService<Topic>, ITopicService
 	{
 		private readonly ITopicRepository topicRepository;
+		private readonly ICommentService commentService;
+		private readonly ICollectService collectService;
 
-		public TopicService(ITopicRepository topicRepository)
+		public TopicService(ITopicRepository topicRepository, ICommentService commentService, ICollectService collectService)
 		{
 			base.baseRepository = topicRepository;
 			this.topicRepository = topicRepository;
+			this.commentService = commentService;
+			this.collectService = collectService;
 		}
 		public Task<List<Topic>> FindAll(int pageNo, int pageSize, string tab)
 		{
@@ -36,6 +40,12 @@ namespace MyForum.BLL
 		public Task<List<Topic>> FindByUserId(int userId, int pageNo, int pageSize)
 		{
 			return topicRepository.FindByUserId(userId, pageNo, pageSize);
+		}
+		public override async Task<bool> DeleteAsync(int id)
+		{
+			return await topicRepository.DeleteAsync(id) 
+				&& await commentService.DeleteByTopicId(id)
+				&& await collectService.DeleteByTopicId(id);	
 		}
 	}
 }

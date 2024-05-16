@@ -14,6 +14,8 @@ namespace MyForum.Model
 		public DbSet<Comment> Comments { get; set; }
 		public DbSet<Collect> Collects {  get; set; }
 		public DbSet<AccessToken> AccessTokens { get; set; }
+		public DbSet<JwtUser> JwtUsers { get; set; }
+		public DbSet<Notification> Notifications { get; set; }
 		public ModelDbContext() { }
 		public ModelDbContext(DbContextOptions<ModelDbContext> options) : base(options)
 		{

@@ -1,5 +1,6 @@
 ﻿using Azure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using MyForum.DAL.Interface;
 using MyForum.Model;
 using System;
@@ -16,10 +17,18 @@ namespace MyForum.DAL
 		{
 		}
 
-		public async Task<List<Topic>> FindAll(int pageNo, int pageSize, string tab)
+		public async Task<List<Topic>> FindAll(int pageNo, int pageSize, string? tab)
 		{
-			var topics = dbctx.Topics.Where(t => t.Tab == tab).Skip(pageNo).Take(pageSize).ToList();
-			return topics;
+			var t = dbctx.Topics.OrderByDescending(t => t.Top).ThenByDescending(t => t.InTime);
+			var topics = t.Skip(pageNo-1).Take(pageSize).ToList();
+			if (string.IsNullOrEmpty(tab))
+			{
+				return topics;
+			} else
+			{
+				return t.Where(t=>t.Tab == tab).Skip(pageNo - 1).Take(pageSize).ToList();
+			}
+			
 		}
 
 		public async Task<Topic> FindByTitle(string title)
@@ -34,7 +43,7 @@ namespace MyForum.DAL
 
 		public async Task<List<Topic>> FindByUserId(int userId, int pageNo, int pageSize)
 		{
-			var topics = dbctx.Topics.Where(t => t.UserId == userId).Skip(pageNo).Take(pageSize).ToList();
+			var topics = dbctx.Topics.Where(t => t.UserId == userId).Skip(pageNo - 1).Take(pageSize).ToList();
 			return topics;
 		}
 	}

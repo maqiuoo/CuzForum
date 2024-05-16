@@ -15,6 +15,18 @@ namespace MyForum.DAL
 		{
 		}
 
+		public Task<User> FindByUserEmail(string email)
+		{
+			var user = dbctx.Users.FirstOrDefaultAsync(u => u.Email == email);
+			return user;
+		}
+
+		public Task<User> FindByUserName(string username)
+		{
+			var user = dbctx.Users.FirstOrDefaultAsync(u => u.Username == username);
+			return user;
+		}
+
 		public List<User> FindTop100(int size)
 		{
 			var users = dbctx.Users.Take(size).ToList();

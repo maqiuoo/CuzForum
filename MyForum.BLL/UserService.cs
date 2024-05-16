@@ -20,6 +20,16 @@ namespace MyForum.BLL
 			this.userRepository = userRepository;
 		}
 
+		public Task<User> FindByUserEmail(string email)
+		{
+			return userRepository.FindByUserEmail(email);
+		}
+
+		public Task<User> FindByUserName(string username)
+		{
+			return userRepository.FindByUserName(username);
+		}
+
 		public List<User> FindTop100(int size)
 		{
 			return userRepository.FindTop100(size);

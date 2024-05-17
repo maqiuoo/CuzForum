@@ -29,7 +29,7 @@ class Login extends Component {
       password: password
     }).then(({ data }) => {
       if (data.code === 200) {
-        this.props.showToast('Login successful');
+        this.props.showToast('登录成功');
 
         if (data.detail && typeof data.detail.token !== 'undefined') {
           localStorage.setItem("accessToken", data.detail.token);
@@ -41,6 +41,9 @@ class Login extends Component {
             enable_redirect: true
           })
         }
+      }
+      else {
+        this.props.showToast(data.msg);
       }
     }).catch(err => this.props.showToast(err.toString()));
   }

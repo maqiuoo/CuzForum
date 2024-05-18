@@ -30,8 +30,10 @@ class Login extends Component {
     }).then(({ data }) => {
       if (data.code === 200) {
         this.props.showToast('登录成功');
+        console.log(data.data);
 
         if (data.detail && typeof data.detail.token !== 'undefined') {
+          console.log(data.detail);
           localStorage.setItem("accessToken", data.detail.token);
           localStorage.setItem("username", username);
           localStorage.setItem("admin", data.detail.admin);

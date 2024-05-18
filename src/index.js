@@ -36,7 +36,7 @@ import HistogramChart2021 from './components/HistogramChart2021';
 import MobilityChart from './components/MobilityChart';
 import WordCloud from './components/WordCloud';
 import FunnelChart from './components/FunnelChart';
-
+import Visualization from './components/Visualization';
 
 ReactDOM.render(
   <Provider store={store}>
@@ -68,6 +68,7 @@ ReactDOM.render(
           <DefaultLayout path='/2021/radar/' component={RadarChart2021} />
           <DefaultLayout path='/2021/histogram/' component={HistogramChart2021} />
 
+          <DefaultLayout path='/visualization/' component={Visualization} />
 
 
           <Route component={NotMatch} />

@@ -17,7 +17,7 @@ class Header extends Component {
     return (
       <div className="header">
         {this.props.header.enable_redirect ? <Redirect to={this.props.header.redirect_url} /> : null}
-        <Link to="/" className="logo">这船社区</Link>
+        <Link to="/" className="logo">浙传社区</Link>
         {
           this.props.header.username ?
             <div className="right">

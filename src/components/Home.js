@@ -40,9 +40,9 @@ class Home extends Component {
               <InfiniteScroll
                 pageStart={1}
                 hasMore={this.props.topic_list.hasMore}
-                loader={<Loading key={1}/>}
+                loader={<Loading key={1} />}
                 loadMore={this.loadMore.bind(this)}>
-                <TopicList topics={this.props.topic_list.topics}/>
+                <TopicList topics={this.props.topic_list.topics} />
               </InfiniteScroll>
             </ul>
             {

@@ -54,7 +54,7 @@ namespace MyForum.Api.Controllers
 				var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
 				AccessToken accessToken = new AccessToken() { InTime=DateTime.Now,Token =  jwtToken };
 				await accessTokenService.Save(accessToken);
-				return APIResultHelper.Success(jwtToken);
+				return APIResultHelper.Success(new {token = jwtToken,isAdmin = user.IsAdmin });
 			} else
 			{
 				return APIResultHelper.Error("账号或密码错误");

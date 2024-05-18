@@ -16,6 +16,7 @@ namespace MyForum.Model
 		public DbSet<AccessToken> AccessTokens { get; set; }
 		public DbSet<JwtUser> JwtUsers { get; set; }
 		public DbSet<Notification> Notifications { get; set; }
+		public DbSet<EmploymentData> EmploymentDatas {  get; set; }
 		public ModelDbContext() { }
 		public ModelDbContext(DbContextOptions<ModelDbContext> options) : base(options)
 		{

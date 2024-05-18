@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MyForum.BLL;
@@ -37,7 +38,7 @@ namespace MyForum.Api
 			builder.Services.AddScoped<ICollectService, CollectService>();
 			builder.Services.AddScoped<IAccessTokenRepository, AccessTokenRepository>();
 			builder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
-
+			builder.Services.AddScoped<ITableReadRepository, TableReadRepository>();
 			#region JWT
 			builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWT"));
 			builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

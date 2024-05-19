@@ -45,14 +45,16 @@ namespace MyForum.Api.Py
         {
             string pythonInterpreter = "python";
 
-            // 设置Python脚本的路径
-            string pythonScriptPath = configuration.GetSection("pythonFilePath").Value;
+			// 设置Python脚本的路径
+			string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+			// 创建文件的绝对路径
+			string absolutePath = Path.Combine(baseDirectory, configuration.GetSection("pythonFilePath").Value);
 
 
 
             ProcessStartInfo startInfo = new ProcessStartInfo(pythonInterpreter)
             {
-                Arguments = $"\"{pythonScriptPath}\"", // 将脚本路径和参数传给Python解释器
+                Arguments = $"\"{absolutePath}\"", // 将脚本路径和参数传给Python解释器
                 UseShellExecute = false, // 不使用系统外壳启动进程
                 RedirectStandardOutput = true, // 重定向输出，使输出信息可以在C#中获取
                 CreateNoWindow = true // 不创建新窗口

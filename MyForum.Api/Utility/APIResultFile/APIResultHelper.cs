@@ -10,7 +10,7 @@ namespace MyForum.JWT.APIResultFile
         public static APIResult Success(dynamic data) {
             return new APIResult {
                 Code = 200,
-                Result = data,
+				Detail = data,
                 Msg = "操作成功",
                 Total = 0
             };
@@ -18,7 +18,7 @@ namespace MyForum.JWT.APIResultFile
         public static APIResult Success(dynamic data,int total) {
             return new APIResult {
                 Code = 200,
-				Result = data,
+				Detail = data,
                 Msg = "操作成功",
                 Total = total
             };
@@ -26,7 +26,7 @@ namespace MyForum.JWT.APIResultFile
         public static APIResult Error(string msg) {
             return new APIResult {
                 Code = 500,
-				Result = null,
+				Detail = null,
                 Msg = msg,
                 Total = 0
             };

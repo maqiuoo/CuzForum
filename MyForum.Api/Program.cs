@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MyForum.Api.Py;
 using MyForum.BLL;
 using MyForum.BLL.Interface;
 using MyForum.DAL;
@@ -13,7 +14,7 @@ using System.Text;
 
 namespace MyForum.Api
 {
-	public class Program
+    public class Program
 	{
 		public static void Main(string[] args)
 		{
@@ -39,6 +40,9 @@ namespace MyForum.Api
 			builder.Services.AddScoped<IAccessTokenRepository, AccessTokenRepository>();
 			builder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
 			builder.Services.AddScoped<ITableReadRepository, TableReadRepository>();
+			builder.Services.AddHostedService<TimedHostedService>();
+			builder.Services.AddScoped<IReptileDataRepository, ReptileDataRepository>();
+
 			#region JWT
 			builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWT"));
 			builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -56,6 +60,9 @@ namespace MyForum.Api
 				});
 			#endregion
 			builder.Services.AddDbContext<ModelDbContext>(options => {
+				options.UseSqlServer("Server=.;DataBase=MyForum;Trusted_Connection=True;TrustServerCertificate=true;");
+			});
+			builder.Services.AddDbContext<ReptileDbContext>(options => {
 				options.UseSqlServer("Server=.;DataBase=MyForum;Trusted_Connection=True;TrustServerCertificate=true;");
 			});
 			string myPloicy = "MyPolicy";

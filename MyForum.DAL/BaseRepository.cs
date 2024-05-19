@@ -15,7 +15,7 @@ namespace MyForum.DAL
 	{
 		protected readonly ModelDbContext dbctx;
 
-		public BaseRepository(ModelDbContext dbctx)
+		public BaseRepository(ModelDbContext dbctx = null)
 		{
 			this.dbctx = dbctx;
 		}

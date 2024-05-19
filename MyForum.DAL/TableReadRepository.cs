@@ -19,5 +19,18 @@ namespace MyForum.DAL
 			await dbctx.EmploymentDatas.AddRangeAsync(employments);
 			return await dbctx.SaveChangesAsync() > 0;
 		}
+
+		public async Task<List<EmploymentData>> FindByYear(int year, string type)
+		{
+			if(type.Equals("chinamap"))
+			{
+				return dbctx.EmploymentDatas.Where(e => e.Year == year && e.Type == "全国").ToList();
+			}
+			if(type.Equals("mobility"))
+			{
+				return dbctx.EmploymentDatas.Where(e => e.Year == year && e.Type == "省内").ToList();
+			}
+			return null;
+		}
 	}
 }

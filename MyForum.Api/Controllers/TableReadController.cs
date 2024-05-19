@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyForum.Api.Utility;
 using MyForum.DAL.Interface;
 using MyForum.Model;
+using MyForum.Model.DTO;
 using System.Drawing;
 
 namespace MyForum.Api.Controllers
@@ -13,11 +15,13 @@ namespace MyForum.Api.Controllers
 	{
 		private readonly IWebHostEnvironment _environment;
 		private readonly ITableReadRepository tableReadRepository;
+		private readonly IMapper mapper;
 
-		public TableReadController(IWebHostEnvironment environment, ITableReadRepository tableReadRepository)
+		public TableReadController(IWebHostEnvironment environment, ITableReadRepository tableReadRepository, IMapper mapper)
 		{
 			_environment = environment;
 			this.tableReadRepository = tableReadRepository;
+			this.mapper = mapper;
 		}
 		[HttpPost]
 		[Route("upload")]
@@ -71,6 +75,31 @@ namespace MyForum.Api.Controllers
 				
 			
 
+		}
+
+		[HttpGet]
+		[Route("{year}/chinamap")]
+		public async Task<ActionResult> GetChinamap(int year)
+		{
+			List<EmploymentDataDTO> chinamapDatas = new List<EmploymentDataDTO>();
+			var empdatas = await tableReadRepository.FindByYear(year,"chinamap");
+			foreach(var e in empdatas)
+			{
+				chinamapDatas.Add(mapper.Map<EmploymentDataDTO>(e));
+			}
+			return Ok(chinamapDatas);
+		}
+		[HttpGet]
+		[Route("{year}/mobility")]
+		public async Task<ActionResult> GetMobility(int year)
+		{
+			List<EmploymentDataDTO> chinamapDatas = new List<EmploymentDataDTO>();
+			var empdatas = await tableReadRepository.FindByYear(year, "mobility");
+			foreach (var e in empdatas)
+			{
+				chinamapDatas.Add(mapper.Map<EmploymentDataDTO>(e));
+			}
+			return Ok(chinamapDatas);
 		}
 	}
 }

@@ -10,6 +10,7 @@ using MyForum.DAL;
 using MyForum.DAL.Interface;
 using MyForum.JWT;
 using MyForum.Model;
+using MyForum.Model.DTO;
 using System.Text;
 
 namespace MyForum.Api
@@ -42,6 +43,7 @@ namespace MyForum.Api
 			builder.Services.AddScoped<ITableReadRepository, TableReadRepository>();
 			builder.Services.AddHostedService<TimedHostedService>();
 			builder.Services.AddScoped<IReptileDataRepository, ReptileDataRepository>();
+			builder.Services.AddAutoMapper(typeof(OrganizationProfile));
 
 			#region JWT
 			builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWT"));

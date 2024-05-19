@@ -65,6 +65,11 @@ namespace MyForum.Api.Py
                 using (StreamReader reader = process.StandardOutput)
                 {
                     string result = reader.ReadToEnd(); // 读取Python脚本的输出信息
+                    if (string.IsNullOrEmpty(result))
+                    {
+                        await Console.Out.WriteLineAsync("没有读到数据");
+                        return;
+                    }
                     List<ReptileData> datas = new List<ReptileData>();  
                     string[] strs = result.Split('\n');
 					using (var scope = _scopeFactory.CreateScope())
@@ -101,7 +106,7 @@ namespace MyForum.Api.Py
 		}
 		public int GetBookClicks(string str)
 		{
-            string clicks = str.Split("的点击量为:")[1].Split("\r")[0];
+			string clicks = str.Split("的点击量为:")[1].Split("\r")[0];
 			return int.Parse(clicks);
 		}
 	}

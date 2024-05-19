@@ -43,7 +43,7 @@ namespace MyForum.Api.Py
         }
         public async void ExecutePy()
         {
-            string pythonInterpreter = "python";
+            string pythonInterpreter = configuration.GetSection("pythonInterpreter").Value;
 
 			// 设置Python脚本的路径
 			string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;

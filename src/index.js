@@ -27,15 +27,9 @@ import EditTopic from './components/EditTopic';
 import UserSettings from './components/UserSettings';
 import Error from './components/Error';
 import NotMatch from './components/NotMatch';
-
 import DefaultLayout from './components/DefaultLayout';
-import ChinaMap from './components/ChinaMap';
-import RadarChart2021 from './components/RadarChart2021';
-import PieChart from './components/PieChart';
-import HistogramChart2021 from './components/HistogramChart2021';
-import MobilityChart from './components/MobilityChart';
 import WordCloud from './components/WordCloud';
-import FunnelChart from './components/FunnelChart';
+
 import Visualization from './components/Visualization';
 
 ReactDOM.render(
@@ -44,6 +38,7 @@ ReactDOM.render(
       <div>
         <Toast />
         <Switch>
+          {/* 论坛核心部分 */}
           <DefaultLayout exact path='/' component={Home} />
           <DefaultLayout path='/topic/create' component={CreateTopic} />
           <DefaultLayout path='/topic/edit/:id' component={EditTopic} />
@@ -58,16 +53,8 @@ ReactDOM.render(
           <DefaultLayout path='/user/:username/comments' component={UserComments} />
           <DefaultLayout path='/user/:username' component={UserProfile} />
 
-          {/* 可视化部分 */}
+          {/* 就业及热点部分 */}
           <DefaultLayout path='/wordcloud/' component={WordCloud} />
-          <DefaultLayout path='/2021/chinamap/' component={() => <ChinaMap year="2021" />} />
-          <DefaultLayout path='/2021/mobility/' component={() => <MobilityChart year="2021" />} />
-          <DefaultLayout path='/2021/funnel/danwei/' component={() => <FunnelChart year="2021" t="单位" />} />
-          <DefaultLayout path='/2021/funnel/hangye/' component={() => <FunnelChart year="2021" t="行业" />} />
-          <DefaultLayout path='/2021/pie/' component={() => <PieChart year="2021" />} />
-          <DefaultLayout path='/2021/radar/' component={RadarChart2021} />
-          <DefaultLayout path='/2021/histogram/' component={HistogramChart2021} />
-
           <DefaultLayout path='/visualization/' component={Visualization} />
 
 

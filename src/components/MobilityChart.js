@@ -2,8 +2,115 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 
 class MobilityChart extends Component {
-    echartsScript = null;
-    componentDidMount() {
+    chartRef = React.createRef();
+    constructor(props) {
+        super(props);
+        const geoProvinceScript = document.createElement("script");
+        geoProvinceScript.src = "zhejiang.js";
+        geoProvinceScript.async = true;
+        document.body.appendChild(geoProvinceScript);
+
+    }
+    async componentDidMount() {
+
+        var carPath = 'path://M727.5,923.582V342.756c0-5.295,2.637-10.256-5.043-10.256h-52.139c8.865,0,6.182-5.204,6.182-11.831V206.928L517.985,71.5H397.447c-8.864,0-20.947,5.541-20.947,12.169v158.685c0,0-0.418-0.01-0.551-0.01c-44.088,0-79.904,35.739-79.904,79.825s35.856,79.824,79.943,79.824c0.133,0,0.512-0.009,0.512-0.01v230.371c0,0-0.418-0.01-0.551-0.01c-44.088,0-79.904,35.738-79.904,79.824s35.856,79.824,79.943,79.824c0.133,0,0.512-0.01,0.512-0.01v131.599c0,5.294,10.312,8.918,17.994,8.918h327.963C730.137,932.5,727.5,928.876,727.5,923.582z';
+        const chart = await window.echarts.init(this.chartRef.current);
+        const data = await this.getData(this.props.year);
+
+        const data1 = data[0];
+        const data2 = data[1];
+
+        // console.log(data);
+
+        var option = {
+            title: {
+                text: `${this.props.year}本科省内就业`,
+                left: 'center',
+                textStyle: {
+                    fontFamily: "Microsoft YaHei",
+                    fontWeight: 400
+                },
+            },
+            tooltip: {
+                formatter: function (params) {
+                    console.log(params);
+                    var value = params.value;
+                    if (Array.isArray(value) && value.length > 2) {
+                        return params.name + ':' + value[2] + '人';
+                    } else {
+                        // 处理value不是数组或者索引2超出范围的情况
+                        return null;
+                    }
+                },
+            },
+            geo: {
+                map: '浙江',
+                silent: true,
+                roam: true,
+                itemStyle: {
+                    color: '#004981',
+                    borderColor: 'rgb(54,192,118)',
+                }
+            },
+            series: [{
+                type: 'lines',
+                coordinateSystem: 'geo',
+                effect: {
+                    show: true,
+                    period: 6,
+                    trailLength: 0,
+                    symbol: carPath,
+                    symbolSize: 15
+                },
+                lineStyle: {
+                    color: function () {
+                        return 'rgb(' + [
+                            Math.round(Math.random() * 150) + 100,
+                            Math.round(Math.random() * 150) + 100,
+                            Math.round(Math.random() * 150) + 100
+                        ].join(',') + ')';
+                    },
+                    width: 2,
+                    opacity: 0.8,
+                    curveness: 0.2
+                },
+                data: data1,
+            },
+            {
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                symbolSize: function (data) {
+                    return data[2] / 160 + 2;
+                },
+                // itemStyle:{
+                // 	color:'#fff',
+                // },
+                data: data2,
+                label: {
+                    show: true,
+                    position: 'top',
+                    color: '#fff',
+                    formatter: '{b}',
+                },
+
+            }
+            ]
+
+        };
+        chart.setOption(option);
+        this.chart = chart;
+
+    }
+
+    componentDidUpdate(prevProps) {
+        // 检查year或type是否有变化
+        if (prevProps.year !== this.props.year) {
+            this.updateChart();
+        }
+    }
+
+    async getData(year) {
+
         const geoCoordMap = {
             阿克苏地区: [80.260604, 41.168779],
             和田地区: [79.922211, 37.114157],
@@ -439,120 +546,42 @@ class MobilityChart extends Component {
             return res;
         };
 
-        var carPath = 'path://M727.5,923.582V342.756c0-5.295,2.637-10.256-5.043-10.256h-52.139c8.865,0,6.182-5.204,6.182-11.831V206.928L517.985,71.5H397.447c-8.864,0-20.947,5.541-20.947,12.169v158.685c0,0-0.418-0.01-0.551-0.01c-44.088,0-79.904,35.739-79.904,79.825s35.856,79.824,79.943,79.824c0.133,0,0.512-0.009,0.512-0.01v230.371c0,0-0.418-0.01-0.551-0.01c-44.088,0-79.904,35.738-79.904,79.824s35.856,79.824,79.943,79.824c0.133,0,0.512-0.01,0.512-0.01v131.599c0,5.294,10.312,8.918,17.994,8.918h327.963C730.137,932.5,727.5,928.876,727.5,923.582z';
-
-        const geoJsonScript = document.createElement("script");
-        geoJsonScript.src = "zhejiang.js";
-        geoJsonScript.async = true;
-        document.body.appendChild(geoJsonScript);
-
-        geoJsonScript.onload = () => {
-            const chart = window.echarts.init(this.refs.chart);
-            fetch(`http://127.0.0.1:4523/m1/4485527-4132188-default/${this.props.year}/mobility`)
-                // .then(response => {
-                //     if (!response.ok) {
-                //         throw new Error('Network response was not ok');
-                //     }
-                //     return response.json();
-                // })
-                // .then(data => {
-                //     console.log(data); 
-                // })
-                // .catch(error => {
-                //     console.error('Error fetching data:', error);
-                // });
-                .then(response => response.json())
-                .then(data => {
-                    // console.log(data);
-                    var option = {
-                        title: {
-                            text: `${this.props.year}本科省内就业`,
-                            left: 'center',
-                            textStyle: {
-                                fontFamily: "Microsoft YaHei",
-                                fontWeight: 400
-                            },
-                        },
-                        tooltip: {
-                            formatter: function (params) {
-                                console.log(params);
-                                var value = params.value;
-                                if (Array.isArray(value) && value.length > 2) {
-                                    return params.name + ':' + value[2] + '人';
-                                } else {
-                                    // 处理value不是数组或者索引2超出范围的情况
-                                    return null;
-                                }
-                            },
-                        },
-                        geo: {
-                            map: '浙江',
-                            silent: true,
-                            roam: true,
-                            itemStyle: {
-                                color: '#004981',
-                                borderColor: 'rgb(54,192,118)',
-                            }
-                        },
-                        series: [{
-                            type: 'lines',
-                            coordinateSystem: 'geo',
-                            effect: {
-                                show: true,
-                                period: 6,
-                                trailLength: 0,
-                                symbol: carPath,
-                                symbolSize: 15
-                            },
-                            lineStyle: {
-                                color: function () {
-                                    return 'rgb(' + [
-                                        Math.round(Math.random() * 150) + 100,
-                                        Math.round(Math.random() * 150) + 100,
-                                        Math.round(Math.random() * 150) + 100
-                                    ].join(',') + ')';
-                                },
-                                width: 2,
-                                opacity: 0.8,
-                                curveness: 0.2
-                            },
-                            data: convertLineData(data),
-                        },
-                        {
-                            type: 'effectScatter',
-                            coordinateSystem: 'geo',
-                            symbolSize: function (data) {
-                                return data[2] / 160 + 2;
-                            },
-                            // itemStyle:{
-                            // 	color:'#fff',
-                            // },
-                            data: convertScatterData(data),
-                            label: {
-                                show: true,
-                                position: 'top',
-                                color: '#fff',
-                                formatter: '{b}',
-                            },
-
-                        }
-                        ]
-
-                    };
-
-
-                    chart.setOption(option);
-                }).catch(error => console.error('Error fetching data:', error));
+        try {
+            const response = await fetch(`http://127.0.0.1:4523/m1/4485527-4132188-default/${year}/mobility`)
+            const data = await response.json();
+            const data1 = convertLineData(data);
+            const data2 = convertScatterData(data);
+            return [data1, data2];
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return null;
         }
-
     }
+
+    async updateChart() {
+        // 根据新的props更新图表
+        const { year } = this.props;
+        const newdata = await this.getData(year);
+        const newdata1 = newdata[0];
+        const newdata2 = newdata[1];
+
+        // 更新图表
+        this.chart.setOption({
+            title: {
+                text: `${year}本科省内就业`,
+            },
+            series: [{
+                data: newdata1
+            }, {
+                data: newdata2
+            }]
+        });
+    }
+
     componentWillUnmount() {
         // 组件卸载时移除脚本
-        if (this.echartsScript) {
-            document.body.removeChild(this.echartsScript);
-        }
-        if (this.geoJsonScript) {
-            document.body.removeChild(this.geoJsonScript);
+        if (this.geoProvinceScript) {
+            document.body.removeChild(this.geoProvinceScript);
         }
     }
 
@@ -560,7 +589,7 @@ class MobilityChart extends Component {
     render() {
         return (
             <div>
-                <div ref="chart" style={{
+                <div ref={this.chartRef} style={{
                     width: 'calc(85vw)',
                     height: 'calc(85vh)',
                     left: 0,

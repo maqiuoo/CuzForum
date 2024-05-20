@@ -136,7 +136,6 @@ namespace MyForum.Api.Controllers
 			{
 				chinamapDatas.Add(mapper.Map<EmploymentDataDTO>(e));
 			}
-			await Task.Delay(1000);
 			return Ok(chinamapDatas);
 		}
 		[HttpGet]
@@ -149,7 +148,6 @@ namespace MyForum.Api.Controllers
 			{
 				chinamapDatas.Add(mapper.Map<EmploymentDataDTO>(e));
 			}
-			await Task.Delay(1000);
 			return Ok(chinamapDatas);
 		}
 	}

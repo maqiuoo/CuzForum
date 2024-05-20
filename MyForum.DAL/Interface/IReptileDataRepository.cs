@@ -10,5 +10,6 @@ namespace MyForum.DAL.Interface
 	public interface IReptileDataRepository
 	{
 		Task<int> AddOrUpdate(List<ReptileData> books);
+		Task<List<ReptileData>> GetAll(); 
 	}
 }

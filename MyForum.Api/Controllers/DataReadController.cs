@@ -11,17 +11,19 @@ namespace MyForum.Api.Controllers
 {
 	[Route("/")]
 	[ApiController]
-	public class TableReadController : ControllerBase
+	public class DataReadController : ControllerBase
 	{
 		private readonly IWebHostEnvironment _environment;
 		private readonly ITableReadRepository tableReadRepository;
+		private readonly IReptileDataRepository reptileDataRepository;
 		private readonly IMapper mapper;
 
-		public TableReadController(IWebHostEnvironment environment, ITableReadRepository tableReadRepository, IMapper mapper)
+		public DataReadController(IWebHostEnvironment environment, ITableReadRepository tableReadRepository, IMapper mapper, IReptileDataRepository reptileDataRepository)
 		{
 			_environment = environment;
 			this.tableReadRepository = tableReadRepository;
 			this.mapper = mapper;
+			this.reptileDataRepository = reptileDataRepository;
 		}
 		[HttpPost]
 		[Route("upload")]
@@ -149,6 +151,18 @@ namespace MyForum.Api.Controllers
 				chinamapDatas.Add(mapper.Map<EmploymentDataDTO>(e));
 			}
 			return Ok(chinamapDatas);
+		}
+		[HttpGet]
+		[Route("wordcloud/books")]
+		public async Task<ActionResult> GetBooks()
+		{
+			List<ReptileDataDTO> reptileDataDTOs = new List<ReptileDataDTO>();
+			var datas = await reptileDataRepository.GetAll();
+			foreach(var data in datas)
+			{
+				reptileDataDTOs.Add(mapper.Map<ReptileDataDTO>(data));
+			}
+			return Ok(reptileDataDTOs);
 		}
 	}
 }

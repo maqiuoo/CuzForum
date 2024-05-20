@@ -33,5 +33,10 @@ namespace MyForum.DAL
 			}
 			return await dbctx.SaveChangesAsync();
 		}
+
+		public async Task<List<ReptileData>> GetAll()
+		{
+			return dbctx.ReptileDatas.ToList();
+		}
 	}
 }

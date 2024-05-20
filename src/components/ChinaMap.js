@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import Axios from '../js/axios';
 
 class ChinaMap extends Component {
     chartRef = React.createRef();
@@ -60,7 +61,7 @@ class ChinaMap extends Component {
                     type: "continuous",
                     min: 0,
                     max: 250,
-                    range: [0, 1600],
+                    range: [0, 300],
                     orient: "vertical",
                     show: true,
                     inverse: false,
@@ -112,8 +113,9 @@ class ChinaMap extends Component {
     async getData(year) {
         // 根据year获取数据
         try {
-            const response = await fetch(`http://127.0.0.1:4523/m1/4485527-4132188-default/${year}/chinamap`)
-            const data = await response.json();
+            const response = await Axios.get(`/${year}/chinamap`);
+            // console.log(response);
+            const data = await response.data;
             // console.log(data);
             return data;
         } catch (error) {

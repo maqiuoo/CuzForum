@@ -6,7 +6,7 @@ class Footer extends Component {
     return (
       <div className="footer">
         <Link to="/visualization" >就业快看</Link>&nbsp;|&nbsp;
-        <a href="/wordcloud">热点讯息</a>
+        <Link to="/viral">热点讯息</Link>
       </div>
     )
   }

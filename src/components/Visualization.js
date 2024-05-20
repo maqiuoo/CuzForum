@@ -32,6 +32,7 @@ class Visualization extends Component {
         }
 
     }
+    
     handleYearChange = (event) => {
         // 更新选中的年份
         this.setState({ selectedYear: event.target.value });

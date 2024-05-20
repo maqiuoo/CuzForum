@@ -28,9 +28,10 @@ import UserSettings from './components/UserSettings';
 import Error from './components/Error';
 import NotMatch from './components/NotMatch';
 import DefaultLayout from './components/DefaultLayout';
-import WordCloud from './components/WordCloud';
-
+import Viral from './components/Viral';
 import Visualization from './components/Visualization';
+
+
 
 ReactDOM.render(
   <Provider store={store}>
@@ -54,7 +55,7 @@ ReactDOM.render(
           <DefaultLayout path='/user/:username' component={UserProfile} />
 
           {/* 就业及热点部分 */}
-          <DefaultLayout path='/wordcloud/' component={WordCloud} />
+          <DefaultLayout path='/viral/' component={Viral} />
           <DefaultLayout path='/visualization/' component={Visualization} />
 
 

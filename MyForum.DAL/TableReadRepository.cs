@@ -1,4 +1,5 @@
-﻿using MyForum.DAL.Interface;
+﻿using Microsoft.EntityFrameworkCore;
+using MyForum.DAL.Interface;
 using MyForum.Model;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,20 @@ namespace MyForum.DAL
 		{
 		}
 
-		public async Task<bool> AddRange(List<EmploymentData> employments)
+		public async Task<bool> UpdateAndCreate(List<EmploymentData> employments)
 		{
-			await dbctx.EmploymentDatas.AddRangeAsync(employments);
+            foreach (var item in employments)
+            {
+				var e = await dbctx.EmploymentDatas.FirstOrDefaultAsync(d=>d.Region == item.Region);
+				if (e == null)
+				{
+					await dbctx.EmploymentDatas.AddAsync(item);
+				} else
+				{
+					e.Region = item.Region;
+					e.Population = item.Population;
+				}
+            }
 			return await dbctx.SaveChangesAsync() > 0;
 		}
 

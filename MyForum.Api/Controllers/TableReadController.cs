@@ -65,16 +65,65 @@ namespace MyForum.Api.Controllers
 					}
 					datas.Add(temp);
 				}
-				bool b = await tableReadRepository.AddRange(datas);
-				if (!b)
+				if (file.FileName.Contains("全国"))
 				{
-					return BadRequest("添加数据到数据库失败");
+					string[] provinces = ["河北","山西","辽宁","吉林","黑龙江", "江苏", "浙江", "安徽", "福建", "江西", "山东", "河南", "湖北", "湖南"
+					,"广东","海南","四川","贵州","云南","陕西","甘肃","青海","台湾","内蒙古","广西","西藏","宁夏","新疆","北京","天津","重庆","上海"
+					,"香港","澳门"];
+					Dictionary<string, int> hasProvinces = new Dictionary<string, int>();
+					for (int i = 0; i < provinces.Length; i++)
+					{
+						hasProvinces[provinces[i]] = 0;
+					}
+					datas.ForEach(data => {
+						if (provinces.Contains(data.Region))
+						{
+							hasProvinces[data.Region] = 1;
+						}
+					});
+					foreach (var item in hasProvinces)
+					{
+						if (item.Value == 0)
+						{
+							datas.Add(new EmploymentData { Region = item.Key, Population = 0,Type = "全国",Year=year });
+						}
+					}
+					bool b = await tableReadRepository.UpdateAndCreate(datas);
+					if (!b)
+					{
+						return Ok("添加数据到数据库失败或无更新内容");
+					}
+					return Ok();
+				} else if(file.FileName.Contains("省内"))
+				{
+					string[] cities = ["杭州", "宁波", "温州", "嘉兴", "湖州", "绍兴", "金华", "衢州", "舟山", "台州", "丽水"];
+					Dictionary<string, int> hasCities = new Dictionary<string, int>();
+					for (int i = 0; i < cities.Length; i++)
+					{
+						hasCities[cities[i]] = 0;
+					}
+					datas.ForEach(data => {
+						if (cities.Contains(data.Region))
+						{
+							hasCities[data.Region] = 1;
+						}
+					});
+					foreach (var item in hasCities)
+					{
+						if (item.Value == 0)
+						{
+							datas.Add(new EmploymentData { Region = item.Key, Population = 0,Type = "省内",Year=year });
+						}
+					}
+					bool b = await tableReadRepository.UpdateAndCreate(datas);
+					if (!b)
+					{
+						return BadRequest("添加数据到数据库失败");
+					}
+					return Ok();
 				}
-				return Ok();
+				return BadRequest("文件错误");
 			}
-				
-			
-
 		}
 
 		[HttpGet]

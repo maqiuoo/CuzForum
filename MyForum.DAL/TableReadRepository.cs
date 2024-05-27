@@ -20,7 +20,7 @@ namespace MyForum.DAL
 		{
             foreach (var item in employments)
             {
-				var e = await dbctx.EmploymentDatas.FirstOrDefaultAsync(d=>d.Region == item.Region);
+				var e = await dbctx.EmploymentDatas.FirstOrDefaultAsync(d=>d.Region == item.Region && item.Year == d.Year);
 				if (e == null)
 				{
 					await dbctx.EmploymentDatas.AddAsync(item);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client.Extensibility;
 using MyForum.DAL.Interface;
 using MyForum.Model;
 using System;
@@ -27,6 +28,7 @@ namespace MyForum.DAL
 				{
 					e.Region = item.Region;
 					e.Population = item.Population;
+					e.Year = item.Year;
 				}
             }
 			return await dbctx.SaveChangesAsync() > 0;

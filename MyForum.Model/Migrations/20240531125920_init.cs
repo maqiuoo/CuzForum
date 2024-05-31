@@ -86,7 +86,7 @@ namespace MyForum.Model.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Tab = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     InTime = table.Column<DateTime>(type: "datetime2", nullable: false),

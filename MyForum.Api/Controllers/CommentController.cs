@@ -33,7 +33,7 @@ namespace MyForum.Api.Controllers
 			var topic = await topicService.FindAsync(topicId);
 			if ( topic == null)
 			{
-				return APIResultHelper.Error("评论不存在");
+				return APIResultHelper.Error("话题不存在");
 			}
 			content = content.Replace("\\n", "<br/>");
 			var targetUserId = topic.UserId.Value;
@@ -68,6 +68,7 @@ namespace MyForum.Api.Controllers
 				user.Score += int.Parse(_configuration.GetSection("site").GetSection("createCommentScore").Value!);
 				await _userService.EditAsync(user);
 				comment.User = user;
+				topic.CommentCount++;
 				return APIResultHelper.Success(comment);
 			} else
 			{

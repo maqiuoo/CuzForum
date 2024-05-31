@@ -300,11 +300,13 @@ namespace MyForum.Model.Migrations
                 {
                     b.HasOne("MyForum.Model.Topic", "Topic")
                         .WithMany()
-                        .HasForeignKey("TopicId");
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("MyForum.Model.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Topic");
 
@@ -315,15 +317,18 @@ namespace MyForum.Model.Migrations
                 {
                     b.HasOne("MyForum.Model.Comment", "SecondComment")
                         .WithMany()
-                        .HasForeignKey("CommentId");
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("MyForum.Model.Topic", "Topic")
                         .WithMany()
-                        .HasForeignKey("TopicId");
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("MyForum.Model.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("SecondComment");
 
@@ -336,11 +341,13 @@ namespace MyForum.Model.Migrations
                 {
                     b.HasOne("MyForum.Model.Topic", "Topic")
                         .WithMany()
-                        .HasForeignKey("TopicId");
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("MyForum.Model.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Topic");
 
@@ -351,7 +358,8 @@ namespace MyForum.Model.Migrations
                 {
                     b.HasOne("MyForum.Model.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("User");
                 });

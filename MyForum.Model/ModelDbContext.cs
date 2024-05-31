@@ -24,29 +24,45 @@ namespace MyForum.Model
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.Entity<Topic>()
-			   .HasOne(t => t.User);
+			   .HasOne(t => t.User)
+			   .WithMany()
+			   .OnDelete(DeleteBehavior.NoAction);
 			// 指明一个Topic有一个User
 
 			modelBuilder.Entity<Notification>()
-			   .HasOne(t => t.User);
+			   .HasOne(t => t.User)
+			   .WithMany()
+			   .OnDelete(DeleteBehavior.NoAction);
 
 			modelBuilder.Entity<Notification>()
-			   .HasOne(t => t.Topic);
+			   .HasOne(t => t.Topic)
+			   .WithMany()
+			   .OnDelete(DeleteBehavior.NoAction);
 
 			modelBuilder.Entity<Comment>()
-			   .HasOne(t => t.User);
+			   .HasOne(t => t.User)
+			   .WithMany()
+			   .OnDelete(DeleteBehavior.NoAction);
 
 			modelBuilder.Entity<Comment>()
-			   .HasOne(t => t.Topic);
+			   .HasOne(t => t.Topic)
+			   .WithMany()
+			   .OnDelete(DeleteBehavior.NoAction);
 
 			modelBuilder.Entity<Comment>()
-			   .HasOne(t => t.SecondComment);
+			   .HasOne(t => t.SecondComment)
+			   .WithMany()
+			   .OnDelete(DeleteBehavior.NoAction);
 
 			modelBuilder.Entity<Collect>()
-			   .HasOne(t => t.User);
+			   .HasOne(t => t.User)
+			   .WithMany()
+			   .OnDelete(DeleteBehavior.NoAction);
 
 			modelBuilder.Entity<Collect>()
-			   .HasOne(t => t.Topic);
+			   .HasOne(t => t.Topic)
+			   .WithMany()
+			   .OnDelete(DeleteBehavior.NoAction);
 
 			base.OnModelCreating(modelBuilder);
 			modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);

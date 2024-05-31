@@ -161,9 +161,9 @@ namespace MyForum.Api.Controllers
 			}
 			try
 			{
-				await _topicService.DeleteAsync(id);
-				await _commentService.DeleteByTopicId(id);
 				await _collectService.DeleteByTopicId(id);
+				await _commentService.DeleteByTopicId(id);
+				await _topicService.DeleteAsync(id);
 			}catch(Exception ex)
 			{
 				return APIResultHelper.Error("删除话题失败");

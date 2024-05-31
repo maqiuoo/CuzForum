@@ -11,18 +11,29 @@ namespace MyForum.Api.Controllers
 	{
 		private readonly ITopicService _topicService;
 		private readonly IUserService _userService;
+		private readonly IConfiguration configuration;
 
-		public HomeController(ITopicService topicService, IUserService userService)
+		public HomeController(ITopicService topicService, IUserService userService, IConfiguration configuration)
 		{
 			_topicService = topicService;
 			_userService = userService;
+			this.configuration = configuration;
 		}
 
 		[HttpGet]
-		public async Task<ActionResult> Home(int pageNo,int pageSize,string tab)
+		public async Task<ActionResult> Home(string? tab,int pageNo = 1)
 		{
-			var topics = await _topicService.FindAll(pageNo, pageSize, tab);
-			return Ok(topics);
+			int pageSize = int.Parse(configuration.GetSection("site").GetSection("pageSize").Value!);
+			if (tab == null)
+			{
+				var t = await _topicService.FindAll(pageNo, pageSize, string.Empty);
+				return Ok(t);
+			} else
+			{
+				var topics = await _topicService.FindAll(pageNo, pageSize, tab);
+				return Ok(topics);
+			}
+			
 		}
 		[HttpGet("top100")]
 		public ActionResult Top100(int size = 7)

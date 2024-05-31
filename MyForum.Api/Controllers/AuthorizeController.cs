@@ -74,9 +74,9 @@ namespace MyForum.Api.Controllers
 				//获取jwttoken
 				var claims = new Claim[]
 				{
-					new Claim(ClaimTypes.Name, user.Username),
-					new Claim("Id",user.Id.ToString()),
-					new Claim("UserName",user.Username)
+					new Claim(ClaimTypes.Name, u.Username),
+					new Claim("Id",u.Id.ToString()),
+					new Claim("UserName",u.Username)
 				};
 				var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWT").GetSection("SecKey").Value!));
 				//issuer代表颁发Token的Web应用程序，audience是Token的受理者
@@ -89,11 +89,11 @@ namespace MyForum.Api.Controllers
 					signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
 				);
 				var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
-				AccessToken accessToken = new AccessToken() { InTime = DateTime.Now, Token = jwtToken,UserId = user.Id };
+				bool b = await _userService.CreateAsync(u);
+				AccessToken accessToken = new AccessToken() { InTime = DateTime.Now, Token = jwtToken,UserId = u.Id };
 				await _accessTokenService.Save(accessToken);
 				Dictionary<string,object> dic = new Dictionary<string,object>();
 				dic.Add("jwtToken", accessToken);
-				bool b = await _userService.CreateAsync(u);
 				if (b)
 				{
 					return APIResultHelper.Success(dic);

@@ -239,7 +239,6 @@ namespace MyForum.Model.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Url")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UserId")

@@ -24,7 +24,7 @@ namespace MyForum.Api.Controllers
 		public async Task<ActionResult> Home(string? tab,int pageNo = 1)
 		{
 			int pageSize = int.Parse(configuration.GetSection("site").GetSection("pageSize").Value!);
-			if (tab == null)
+			if (tab == null || tab.Equals("all"))
 			{
 				var t = await _topicService.FindAll(pageNo, pageSize, string.Empty);
 				return Ok(t);

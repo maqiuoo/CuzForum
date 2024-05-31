@@ -35,11 +35,11 @@ namespace MyForum.Api.Controllers
 			{
 				return BadRequest("已经收藏了这个话题");
 			}
-			collect = new Collect() { TopicId =  topicId,UserId = user.Id,InTime = DateTime.Now };
+			collect = new Collect() { TopicId =  topicId,UserId = user.Id,InTime = DateTime.Now,Topic=topic,User=user};
 			await collectService.CreateAsync(collect);
 			topic.CollectCount += 1;
 			await topicService.EditAsync(topic);
-			bool b = await notificationService.Create(topicId, user.Id, topic.UserId, "COLLECT");
+			bool b = await notificationService.Create(topicId, user.Id, topic.UserId.Value, "COLLECT");
 			if (b)
 			{
 				return Ok();

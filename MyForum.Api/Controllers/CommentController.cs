@@ -35,7 +35,7 @@ namespace MyForum.Api.Controllers
 				return BadRequest("评论不存在");
 			}
 			content = content.Replace("\\n", "<br/>");
-			var targetUserId = topic.UserId;
+			var targetUserId = topic.UserId.Value;
 			var action = "COMMENT";
 			if (commentId.HasValue)
 			{
@@ -49,14 +49,14 @@ namespace MyForum.Api.Controllers
 					//创建通知 给话题作者发通知
 					await notificationService.Create(topicId,user.Id,targetUserId,action);
 				}
-				targetUserId = _comment.UserId;
+				targetUserId = _comment.UserId.Value;
 				action = "REPLY";
 				await notificationService.Create(topicId,user.Id,targetUserId,action);
 			} else
 			{
 				await notificationService.Create(topicId,user.Id,targetUserId,action);
 			}
-			Comment comment = new Comment() { Content= content,TopicId=topicId,InTime = DateTime.Now,UserId=user.Id };
+			Comment comment = new Comment() { Content= content,TopicId=topicId,InTime = DateTime.Now,UserId=user.Id,User=user,Topic=topic};
 			if(commentId != null)
 			{
 				comment.CommentId = (int)commentId;
@@ -115,8 +115,8 @@ namespace MyForum.Api.Controllers
 			{
 				return BadRequest("没有这条评论");
 			}
-			User commentUser = await _userService.FindAsync(comment.UserId);
-			Topic topic = await topicService.FindAsync(comment.TopicId);
+			User commentUser = await _userService.FindAsync(comment.UserId.Value);
+			Topic topic = await topicService.FindAsync(comment.TopicId.Value);
 			topic.CommentCount -= 1;
 			await topicService.EditAsync(topic);
 			bool b = await _commentService.DeleteAsync(commentId);

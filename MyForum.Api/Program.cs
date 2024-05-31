@@ -62,7 +62,7 @@ namespace MyForum.Api
 				});
 			#endregion
 			builder.Services.AddDbContext<ModelDbContext>(options => {
-				options.UseSqlServer("Server=.;DataBase=MyForum;Trusted_Connection=True;TrustServerCertificate=true;");
+				options.UseLazyLoadingProxies().UseSqlServer("Server=.;DataBase=MyForum;Trusted_Connection=True;TrustServerCertificate=true;");
 			});
 			builder.Services.AddDbContext<ReptileDbContext>(options => {
 				options.UseSqlServer("Server=.;DataBase=MyForum;Trusted_Connection=True;TrustServerCertificate=true;");

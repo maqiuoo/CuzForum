@@ -11,17 +11,14 @@ namespace MyForum.Model
 	public class Comment : IEntity
 	{
 		public int Id { get; set; }
-		public int TopicId { get; set; }
-		public int UserId { get; set; }
+		public int? TopicId { get; set; }
+		public int? UserId { get; set; }
 		public string Content { get; set; }
 		public DateTime InTime { get; set; }
-		public int CommentId { get; set; }
-		[NotMapped]
-		public Topic Topic {  get; set; }
-		[NotMapped]
-		public User User {  get; set; }
-		[NotMapped]
-		public Comment SecondComment {  get; set; }
+		public int? CommentId { get; set; }
+		public virtual Topic? Topic {  get; set; }
+		public virtual User? User {  get; set; }
+		public virtual Comment? SecondComment {  get; set; }
 
 	}
 }

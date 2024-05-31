@@ -30,8 +30,8 @@ namespace MyForum.Api.Controllers
 			List<Notification> page = await notificationService.FindByUserId(user.Id, pageNo,pageSize);
 			foreach (var notification in page)
 			{
-				var topic = await topicService.FindAsync(notification.TopicId);
-				var _user = await _userService.FindAsync(notification.UserId);
+				var topic = await topicService.FindAsync(notification.TopicId.Value);
+				var _user = await _userService.FindAsync(notification.UserId.Value);
 				notification.Topic = topic;
 				notification.User = user;
 			}

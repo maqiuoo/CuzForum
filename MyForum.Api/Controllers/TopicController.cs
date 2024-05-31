@@ -63,7 +63,7 @@ namespace MyForum.Api.Controllers
 			{
 				dic.Add("collect", false);
 			}
-			User topicUser = await _userService.FindAsync(topic.UserId);
+			User topicUser = await _userService.FindAsync(topic.UserId.Value);
 			topic.User = topicUser;
 			bool b = await _topicService.EditAsync(topic);
 			if (!b)
@@ -71,9 +71,9 @@ namespace MyForum.Api.Controllers
 			List<Comment> comments = await _commentService.FindByTopicId(id);
 			comments.ForEach(async comment =>
 			{
-				comment.User = await _userService.FindAsync(comment.UserId);
+				comment.User = await _userService.FindAsync(comment.UserId.Value);
 				if (comment.SecondComment != null)		{
-					comment.SecondComment = await _commentService.FindAsync(comment.CommentId);
+					comment.SecondComment = await _commentService.FindAsync(comment.CommentId.Value);
 				}
 			});
 			dic.Add("topic", topic);
@@ -165,7 +165,7 @@ namespace MyForum.Api.Controllers
 			{
 				return BadRequest("没有权限");
 			}
-			User topicUser = await _userService.FindAsync(oldTopic.UserId);
+			User topicUser = await _userService.FindAsync(oldTopic.UserId.Value);
 			oldTopic.Good = !oldTopic.Good;
 			if ((bool)oldTopic.Good!)
 			{

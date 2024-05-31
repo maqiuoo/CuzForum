@@ -23,6 +23,31 @@ namespace MyForum.Model
 		}
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			modelBuilder.Entity<Topic>()
+			   .HasOne(t => t.User);
+			// 指明一个Topic有一个User
+
+			modelBuilder.Entity<Notification>()
+			   .HasOne(t => t.User);
+
+			modelBuilder.Entity<Notification>()
+			   .HasOne(t => t.Topic);
+
+			modelBuilder.Entity<Comment>()
+			   .HasOne(t => t.User);
+
+			modelBuilder.Entity<Comment>()
+			   .HasOne(t => t.Topic);
+
+			modelBuilder.Entity<Comment>()
+			   .HasOne(t => t.SecondComment);
+
+			modelBuilder.Entity<Collect>()
+			   .HasOne(t => t.User);
+
+			modelBuilder.Entity<Collect>()
+			   .HasOne(t => t.Topic);
+
 			base.OnModelCreating(modelBuilder);
 			modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
 		}

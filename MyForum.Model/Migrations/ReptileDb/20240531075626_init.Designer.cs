@@ -11,7 +11,7 @@ using MyForum.Model;
 namespace MyForum.Model.Migrations.ReptileDb
 {
     [DbContext(typeof(ReptileDbContext))]
-    [Migration("20240519080125_init")]
+    [Migration("20240531075626_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -19,7 +19,7 @@ namespace MyForum.Model.Migrations.ReptileDb
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);

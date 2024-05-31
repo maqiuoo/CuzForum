@@ -16,7 +16,7 @@ namespace MyForum.Model
 		public string Tab { get; set; }
 		public DateTime InTime { get; set; }
 		public DateTime ModifyTime { get; set; }
-		public int UserId { get; set; }
+		public int? UserId { get; set; }
 		// 评论数
 		public int? CommentCount { get; set; }
 		// 收藏数
@@ -27,8 +27,7 @@ namespace MyForum.Model
 		public bool? Top { get; set; }
 		// 加精
 		public bool? Good { get; set; }
-		[NotMapped] // 根据你的序列化框架选择忽略属性的方式
-		public User User { get; set; }
+		public virtual User? User { get; set; }
 
 	}
 }

@@ -43,9 +43,7 @@ namespace MyForum.BLL
 		}
 		public override async Task<bool> DeleteAsync(int id)
 		{
-			return await topicRepository.DeleteAsync(id) 
-				&& await commentService.DeleteByTopicId(id)
-				&& await collectService.DeleteByTopicId(id);	
+			return await topicRepository.DeleteAsync(id);	
 		}
 		public Task<int> GetAll()
 		{

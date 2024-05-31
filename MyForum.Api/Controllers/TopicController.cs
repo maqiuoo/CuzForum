@@ -145,6 +145,10 @@ namespace MyForum.Api.Controllers
 		{
 			User user = await GetUser();
 			Topic topic = await _topicService.FindAsync(id);
+			if(topic == null)
+			{
+				return APIResultHelper.Error("话题不存在");
+			}
 			var sections = _configuration.GetSection("site").GetSection("admin").GetChildren().ToList();
 			List<string> admins = new List<string>();
 			foreach (var section in sections)
@@ -155,15 +159,16 @@ namespace MyForum.Api.Controllers
 			{
 				return APIResultHelper.Error("无权删除话题");
 			}
-			bool b = await _topicService.DeleteAsync(id);
-			if (b)
+			try
 			{
-
-				return APIResultHelper.Success();
-			} else
+				await _topicService.DeleteAsync(id);
+				await _commentService.DeleteByTopicId(id);
+				await _collectService.DeleteByTopicId(id);
+			}catch(Exception ex)
 			{
 				return APIResultHelper.Error("删除话题失败");
-			}
+			}		
+			return APIResultHelper.Success();
 		}
 
 		[HttpGet("good")]

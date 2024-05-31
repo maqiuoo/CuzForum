@@ -28,7 +28,7 @@ namespace MyForum.DAL
 
 		public async Task<bool> DeleteAsync(int id)
 		{
-			T entity = await dbctx.Set<T>().FirstAsync(t => t.Id == id);
+			T entity = await dbctx.Set<T>().FirstOrDefaultAsync(t => t.Id == id);
 			if(entity == null)
 			{
 				return false;

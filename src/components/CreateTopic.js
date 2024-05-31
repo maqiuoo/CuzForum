@@ -24,12 +24,28 @@ class CreateTopic extends Component {
   create() {
     const tab = this.refs.tab[this.refs.tab.selectedIndex].value;
     const title = this.refs.title.value;
-    const url = this.refs.url.value;
+    let url = this.refs.url.value;
     const content = this.refs.content.value;
+    const urlPattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+
     if (!title) {
       this.props.dispatch(showToast("标题不能为空"));
       return;
+    }    
+    if (url && !urlPattern.test(url)) {
+      this.props.dispatch(showToast("请输入有效的URL"));
+      return;
     }
+    if (!content) {
+      this.props.dispatch(showToast("内容不能为空"));
+      return;
+    }
+    
     Axios.post('/topic/create', {
       tab: tab,
       title: title,

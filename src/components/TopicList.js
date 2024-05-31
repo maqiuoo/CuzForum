@@ -33,21 +33,42 @@ class TopicList extends Component {
                   <div className="title">
                     {
                       v.url
-                      ? <span><a href={v.url} target="_blank">[转]{v.title}</a>
-                        {
-                          v.url
-                            ? <span style={{ fontSize: 14, fontStyle: 'italic' }}>&nbsp;&nbsp;{new URL(v.url).hostname}</span>
-                            : null
-                        }
-                      </span>
-                      : <Link to={'/topic/' + v.id}>{v.title}</Link>
+                        ? <span><a href={(() => {
+                          // 检查 URL 是否以 http:// 或 https:// 开头
+                          if (!v.url.startsWith('http://') && !v.url.startsWith('https://')) {
+                            // 如果不是，则添加 http:// 前缀
+                            return 'http://' + v.url;
+                          }
+                          // 如果已经是有效的外部链接，则直接返回
+                          return v.url;
+                        })()} target="_blank">[转]{v.title}</a>
+                          {
+                            v.url
+                              ? <span style={{ fontSize: 14, fontStyle: 'italic' }}>
+                                &nbsp;&nbsp;
+                                {
+                                  (() => {
+                                    try {
+                                      // 尝试解析 URL 并返回 hostname
+                                      return new URL(v.url).hostname;
+                                    } catch (e) {
+                                      // 如果 URL 无效，直接返回原始的 v.url 字符串
+                                      return v.url;
+                                    }
+                                  })()
+                                }
+                              </span>
+                              : null
+                          }
+                        </span>
+                        : <Link to={'/topic/' + v.id}>{v.title}</Link>
                     }
                   </div>
                   <div className="topic-info">
                     <span><Link to={"/topic/" + v.id}>{v.commentCount}/{v.view}</Link></span>&nbsp;•&nbsp;
-                        <span className="tab">{tab}</span>&nbsp;•&nbsp;
-                        <span><Link to={'/user/' + v.user.username}>{v.user.username}</Link></span>&nbsp;•&nbsp;
-                        <span>{moment(v.inTime).fromNow()}</span>
+                    <span className="tab">{tab}</span>&nbsp;•&nbsp;
+                    <span><Link to={'/user/' + v.user.username}>{v.user.username}</Link></span>&nbsp;•&nbsp;
+                    <span>{moment(v.inTime).fromNow()}</span>
                   </div>
                 </div>
               </li>

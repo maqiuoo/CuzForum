@@ -423,6 +423,22 @@ section {
   flex-direction: column;
 }
 
+.box-centered-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.list-centered-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+@media (max-width: 1080px) {
+  .list-centered-container {
+    flex-direction: column; /* 当屏幕宽度小于等于1080px时，子元素并列显示 */
+  }
+}
 
 
 .box select {
@@ -461,4 +477,28 @@ section {
 
 .box select option {
   padding: 30px;
+}
+
+.horizontal-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex; /* 使列表项横向排列 */
+  justify-content: center; /* 可选，根据需要居中显示 */
+  gap: 10px; /* 可选，设置列表项之间的间隔 */
+}
+
+.horizontal-list li {
+  display: inline-block; /* 使每个列表项横向排列 */
+  cursor: pointer; /* 可选，鼠标悬停时显示指针 */
+}
+
+.active {
+  background-color: #3293b0; 
+  color: white; 
+}
+
+.list {
+  min-height: 400px; 
+  width: 500px;
 }

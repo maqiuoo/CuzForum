@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import WordCloud from './WordCloud';
+// eslint-disable-next-line
+import ListInformation from './ListInformation';
 
 class Viral extends Component {
     state = {
@@ -33,13 +35,17 @@ class Viral extends Component {
         if (!isScriptLoaded) {
             return null;
         }
-            // 脚本加载完成后，渲染组件
-            return (
-                <div className="centered-container">
-                    <WordCloud type="books" />
-                </div>
-            );
-        }
+        // 脚本加载完成后，渲染组件
+        return (
+            <div className="box-centered-container">
+                <WordCloud type="books" />
+                {/* <div className="list-centered-container">
+                    <ListInformation type="lectures" />
+                    <ListInformation type="notification" />
+                </div> */}
+            </div>
+        );
     }
+}
 
 export default withRouter(Viral);

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import Axios from '../js/axios';
+
 
 class WordCloud extends Component {
     chartRef = React.createRef();
@@ -82,11 +84,11 @@ class WordCloud extends Component {
 
         try {
             if (type === "books") {
-                title = "图书馆热度"
+                title = "图书馆热搜书籍"
             }
-            const response = await fetch(`http://127.0.0.1:4523/m1/4485527-4132188-default/wordcloud/${type}`);
-            const data = await response.json();
-            return [data,title];
+            const response = await Axios.get(`/wordcloud/${type}`);
+            const data = await response.data;
+            return [data, title];
         } catch (error) {
             console.error('Error fetching data:', error);
             return null;
@@ -133,8 +135,8 @@ class WordCloud extends Component {
         return (
             <div>
                 <div ref={this.chartRef} style={{
-                    width: 'calc(40vw)',
-                    height: 'calc(40vh)',
+                    width: 'calc(50vw)',
+                    height: 'calc(50vh)',
                     left: 0,
                     right: 0,
                     top: 0,

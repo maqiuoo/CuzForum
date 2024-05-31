@@ -10,6 +10,7 @@ class MobilityChart extends Component {
         geoProvinceScript.async = true;
         document.body.appendChild(geoProvinceScript);
         const data = await this.getData(this.props.year);
+        // console.log(data)
         geoProvinceScript.onload = () => {
 
             var carPath = 'path://M727.5,923.582V342.756c0-5.295,2.637-10.256-5.043-10.256h-52.139c8.865,0,6.182-5.204,6.182-11.831V206.928L517.985,71.5H397.447c-8.864,0-20.947,5.541-20.947,12.169v158.685c0,0-0.418-0.01-0.551-0.01c-44.088,0-79.904,35.739-79.904,79.825s35.856,79.824,79.943,79.824c0.133,0,0.512-0.009,0.512-0.01v230.371c0,0-0.418-0.01-0.551-0.01c-44.088,0-79.904,35.738-79.904,79.824s35.856,79.824,79.943,79.824c0.133,0,0.512-0.01,0.512-0.01v131.599c0,5.294,10.312,8.918,17.994,8.918h327.963C730.137,932.5,727.5,928.876,727.5,923.582z';
@@ -49,8 +50,13 @@ class MobilityChart extends Component {
                     silent: true,
                     roam: true,
                     itemStyle: {
-                        color: '#004981',
                         borderColor: 'rgb(54,192,118)',
+                        areaColor: '#013C62',
+                        shadowBlur: 50,
+                        shadowColor: '#01273F',
+                        shadowOffsexX: 30,
+                        shadowOffsexY: 30,
+                        opacity: 1,
                     }
                 },
                 series: [{

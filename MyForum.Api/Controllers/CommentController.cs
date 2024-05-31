@@ -110,10 +110,14 @@ namespace MyForum.Api.Controllers
 			}
 		}
 		[HttpGet("delete")]
-		public async Task<APIResult> Delete([FromForm] int commentId)
+		public async Task<APIResult> Delete(int commentId)
 		{
 			User user = await GetUser();
 			Comment comment = await _commentService.FindAsync(commentId);
+			if (comment == null)
+			{
+				return APIResultHelper.Error("没有这条评论");
+			}
 			var sections = _configuration.GetSection("site").GetSection("admin").GetChildren().ToList();
 			List<string> admins = new List<string>();
 			foreach (var section in sections)
@@ -123,10 +127,6 @@ namespace MyForum.Api.Controllers
 			if (user.Id != comment.UserId || (admins.Count > 0 && !admins.Contains(user.Username)))
 			{
 				return APIResultHelper.Error("不能删除别人的评论");
-			}
-			if (comment == null)
-			{
-				return APIResultHelper.Error("没有这条评论");
 			}
 			User commentUser = await _userService.FindAsync(comment.UserId.Value);
 			Topic topic = await topicService.FindAsync(comment.TopicId.Value);

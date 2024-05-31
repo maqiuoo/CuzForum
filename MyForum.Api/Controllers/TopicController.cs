@@ -141,7 +141,7 @@ namespace MyForum.Api.Controllers
 
 		[HttpGet("delete")]
 		[Authorize]
-		public async Task<APIResult> Delete([FromForm] int id)
+		public async Task<APIResult> Delete(int id)
 		{
 			User user = await GetUser();
 			Topic topic = await _topicService.FindAsync(id);

@@ -86,7 +86,7 @@ namespace MyForum.Api.Controllers
 			[FromForm] string url, [FromForm] string content, [FromForm] string tab)
 		{
 			User user = await GetUser();
-			Topic topic = new Topic { Title = title, Url = url, Content = content, Tab = tab,InTime = DateTime.Now };
+			Topic topic = new Topic { Title = title, Url = url, Content = content, Tab = tab,InTime = DateTime.Now,User = user };
 			topic.UserId = user.Id;
 			topic.CommentCount = 0;
 			topic.CollectCount = 0;

@@ -16,12 +16,14 @@ namespace MyForum.Api.Controllers
 		protected readonly JWTSettings jwtSettings;
 		protected readonly IUserService _userService;
 		protected readonly IAccessTokenService _accessTokenService;
+		protected readonly IConfiguration _configuration;
 
-		public BaseController(IOptions<JWTSettings> options, IUserService userService, IAccessTokenService accessTokenService)
+		public BaseController(IOptions<JWTSettings> options, IUserService userService, IAccessTokenService accessTokenService, IConfiguration configuration)
 		{
 			jwtSettings = options.Value;
 			_userService = userService;
 			_accessTokenService = accessTokenService;
+			_configuration = configuration;
 		}
 
 		protected async Task<User> GetUserForTopicDetail()

@@ -1,25 +1,62 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using HtmlAgilityPack;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using MyForum.BLL.Interface;
+using MyForum.JWT;
 using MyForum.Model;
 
 namespace MyForum.Api.Controllers
 {
 	[Route("/comment")]
 	[ApiController]
-	public class CommentController : ControllerBase
+	[Authorize]
+	public class CommentController : BaseController
 	{
 		private readonly ICommentService _commentService;
+		private readonly ITopicService topicService;
+		private readonly INotificationService notificationService;
 
-		public CommentController(ICommentService commentService)
+		public CommentController(IOptions<JWTSettings> options, IUserService userService, IAccessTokenService accessTokenService, IConfiguration configuration, ICommentService commentService, ITopicService topicService, INotificationService notificationService) : base(options, userService, accessTokenService, configuration)
 		{
 			_commentService = commentService;
+			this.topicService = topicService;
+			this.notificationService = notificationService;
 		}
 
 		[HttpPost("create")]
 		public async Task<ActionResult> Create([FromForm]int topicId, [FromForm] int? commentId, [FromForm] string content)
 		{
-			Comment comment = new Comment() { Content= content,TopicId=topicId };
+			User user = await GetUser();
+			var topic = await topicService.FindAsync(topicId);
+			if ( topic == null)
+			{
+				return BadRequest("评论不存在");
+			}
+			content = content.Replace("\\n", "<br/>");
+			var targetUserId = topic.UserId;
+			var action = "COMMENT";
+			if (commentId.HasValue)
+			{
+				Comment _comment = await _commentService.FindAsync(commentId.Value);
+				if(_comment == null )
+				{
+					return BadRequest("回复的评论不存在");
+				}
+				if(topic.UserId != _comment.UserId)
+				{
+					//创建通知 给话题作者发通知
+					await notificationService.Create(topicId,user.Id,targetUserId,action);
+				}
+				targetUserId = _comment.UserId;
+				action = "REPLY";
+				await notificationService.Create(topicId,user.Id,targetUserId,action);
+			} else
+			{
+				await notificationService.Create(topicId,user.Id,targetUserId,action);
+			}
+			Comment comment = new Comment() { Content= content,TopicId=topicId,InTime = DateTime.Now,UserId=user.Id };
 			if(commentId != null)
 			{
 				comment.CommentId = (int)commentId;
@@ -27,7 +64,10 @@ namespace MyForum.Api.Controllers
 			bool b = await _commentService.CreateAsync(comment);
 			if (b)
 			{
-				return Ok();
+				user.Score += int.Parse(_configuration.GetSection("site").GetSection("createCommentScore").Value!);
+				await _userService.EditAsync(user);
+				comment.User = user;
+				return Ok(comment);
 			} else
 			{
 				return BadRequest("创建失败");
@@ -37,12 +77,22 @@ namespace MyForum.Api.Controllers
 		[HttpPost("update")]
 		public async Task<ActionResult> Update([FromForm] int commentId, [FromForm] string content)
 		{
+			User user = await GetUser();
 			Comment comment = await _commentService.FindAsync(commentId);
 			if (comment == null)
 			{
 				return BadRequest("没有这条评论");
 			}
-			comment.Content = content;
+			if(user.Id!=comment.UserId || !_configuration.GetSection("site").GetSection("admin").Value.Contains(user.Username))
+			{
+				return BadRequest("不能修改别人的评论");
+			}
+			HtmlDocument htmlDoc = new HtmlDocument();
+			htmlDoc.LoadHtml(comment.Content);
+			// 基于HtmlAgilityPack来获取无标签的纯文本
+			string cleanContent = HtmlEntity.DeEntitize(htmlDoc.DocumentNode.InnerText);
+			// 设置评论的内容为清理后的文本
+			comment.Content = cleanContent;
 			bool b = await _commentService.EditAsync(comment);
 			if (b)
 			{
@@ -55,14 +105,25 @@ namespace MyForum.Api.Controllers
 		[HttpPost("delete")]
 		public async Task<ActionResult> Delete([FromForm] int commentId)
 		{
+			User user = await GetUser();
 			Comment comment = await _commentService.FindAsync(commentId);
+			if(user.Id != comment.UserId || !_configuration.GetSection("site").GetSection("admin").Value.Contains(user.Username))
+			{
+				return BadRequest("不能删除别人的评论");
+			}
 			if (comment == null)
 			{
 				return BadRequest("没有这条评论");
 			}
+			User commentUser = await _userService.FindAsync(comment.UserId);
+			Topic topic = await topicService.FindAsync(comment.TopicId);
+			topic.CommentCount -= 1;
+			await topicService.EditAsync(topic);
 			bool b = await _commentService.DeleteAsync(commentId);
 			if (b)
 			{
+				commentUser.Score -= int.Parse(_configuration.GetSection("site").GetSection("createCommentScore").Value!);
+				await _userService.EditAsync(commentUser);
 				return Ok();
 			} else
 			{

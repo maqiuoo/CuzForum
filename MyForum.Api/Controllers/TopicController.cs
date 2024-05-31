@@ -11,31 +11,38 @@ namespace MyForum.Api.Controllers
 {
 	[Route("/topic")]
 	[ApiController]
-
+	[Authorize]
 	public class TopicController : BaseController
 	{
-		private readonly JWTSettings jwtSettings;
-		private readonly ITopicService _topicService;
-		private readonly ICollectService _collectService;
-		private readonly IUserService _userService;
-		private readonly ICommentService _commentService;
-		private readonly IConfiguration _configuration;
-		private IAccessTokenService _accessTokenService;
-
-		public TopicController(ITopicService topicService
-			, ICollectService collectService, IUserService userService
-			, ICommentService commentService, IConfiguration configuration
-			, IOptions<JWTSettings> options
-			, IAccessTokenService accessTokenService):base(options,userService,accessTokenService)
+		public TopicController(IOptions<JWTSettings> options, IUserService userService, IAccessTokenService accessTokenService, IConfiguration configuration, ITopicService topicService, ICollectService collectService, ICommentService commentService) : base(options, userService, accessTokenService, configuration)
 		{
 			_topicService = topicService;
 			_collectService = collectService;
-			_userService = userService;
 			_commentService = commentService;
-			_configuration = configuration;
-			jwtSettings = options.Value;
-			_accessTokenService = accessTokenService;
 		}
+
+		//private readonly JWTSettings jwtSettings;
+		private readonly ITopicService _topicService;
+		private readonly ICollectService _collectService;
+		//private readonly IUserService _userService;
+		private readonly ICommentService _commentService;
+		//private readonly IConfiguration _configuration;
+		//private IAccessTokenService _accessTokenService;
+
+		//public TopicController(ITopicService topicService
+		//	, ICollectService collectService, IUserService userService
+		//	, ICommentService commentService, IConfiguration configuration
+		//	, IOptions<JWTSettings> options
+		//	, IAccessTokenService accessTokenService):base(options,userService,accessTokenService,)
+		//{
+		//	_topicService = topicService;
+		//	_collectService = collectService;
+		//	_userService = userService;
+		//	_commentService = commentService;
+		//	_configuration = configuration;
+		//	jwtSettings = options.Value;
+		//	_accessTokenService = accessTokenService;
+		//}
 
 		[HttpGet("detail")]
 		public async Task<ActionResult> Detail(int id)

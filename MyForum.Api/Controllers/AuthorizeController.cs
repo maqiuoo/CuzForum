@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MyForum.BLL.Interface;
+using MyForum.JWT;
 using MyForum.JWT.APIResultFile;
 using MyForum.JWT.Utility;
 using MyForum.Model;
@@ -15,24 +17,24 @@ namespace MyForum.Api.Controllers
 	[Route("/")]
 	[ApiController]
 	[EnableCors("MyPolicy")]
-	public class AuthorizeController : ControllerBase
+	public class AuthorizeController : BaseController
 	{
-		private readonly IUserService iUserService;
-		private readonly IAccessTokenService accessTokenService;
-		private readonly IConfiguration configuration;
-
-		public AuthorizeController(IUserService iUserService, IConfiguration configuration, IAccessTokenService accessTokenService)
+		public AuthorizeController(IOptions<JWTSettings> options, IUserService userService, IAccessTokenService accessTokenService, IConfiguration configuration) : base(options, userService, accessTokenService, configuration)
 		{
-			this.iUserService = iUserService;
-			this.configuration = configuration;
-			this.accessTokenService = accessTokenService;
 		}
+
+		//public AuthorizeController(IUserService iUserService, IConfiguration configuration, IAccessTokenService accessTokenService)
+		//{
+		//	this.iUserService = iUserService;
+		//	this.configuration = configuration;
+		//	this.accessTokenService = accessTokenService;
+		//}
 		[HttpPost("login")]
 
 		public async Task<APIResult> Login([FromForm] string username, [FromForm] string password)
 		{
 			string pwd = MD5Helper.MD5Encrypt32(password);
-			var user = await iUserService.FindAsync(c => c.Username == username && c.Password == pwd);
+			var user = await _userService.FindAsync(c => c.Username == username && c.Password == pwd);
 			if (user != null)
 			{
 				var claims = new Claim[]
@@ -41,7 +43,7 @@ namespace MyForum.Api.Controllers
 					new Claim("Id",user.Id.ToString()),
 					new Claim("UserName",user.Username)
 				};
-				var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("JWT").GetSection("SecKey").Value!));
+				var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWT").GetSection("SecKey").Value!));
 				//issuer代表颁发Token的Web应用程序，audience是Token的受理者
 				var token = new JwtSecurityToken(
 					issuer: "http://localhost:6060",
@@ -53,7 +55,7 @@ namespace MyForum.Api.Controllers
 				);
 				var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
 				AccessToken accessToken = new AccessToken() { InTime=DateTime.Now,Token =  jwtToken };
-				await accessTokenService.Save(accessToken);
+				await _accessTokenService.Save(accessToken);
 				return APIResultHelper.Success(new {token = jwtToken,isAdmin = user.IsAdmin });
 			} else
 			{
@@ -65,14 +67,36 @@ namespace MyForum.Api.Controllers
 		public async Task<APIResult> Register([FromForm] string username, [FromForm] string password)
 		{
 			string pwd = MD5Helper.MD5Encrypt32(password);
-			var user = await iUserService.FindAsync(c => c.Username == username);
+			var user = await _userService.FindAsync(c => c.Username == username);
 			if (user == null)
 			{
-				User u = new User() { Username = username, Password = pwd, InTime = DateTime.Now };
-				bool b = await iUserService.CreateAsync(u);
+				User u = new User() { Username = username, Password = pwd, InTime = DateTime.Now,Score = 0 };
+				//获取jwttoken
+				var claims = new Claim[]
+				{
+					new Claim(ClaimTypes.Name, user.Username),
+					new Claim("Id",user.Id.ToString()),
+					new Claim("UserName",user.Username)
+				};
+				var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWT").GetSection("SecKey").Value!));
+				//issuer代表颁发Token的Web应用程序，audience是Token的受理者
+				var token = new JwtSecurityToken(
+					issuer: "http://localhost:6060",
+					audience: "http://localhost:5000",
+					claims: claims,
+					notBefore: DateTime.Now,
+					expires: DateTime.Now.AddHours(1),
+					signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+				);
+				var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
+				AccessToken accessToken = new AccessToken() { InTime = DateTime.Now, Token = jwtToken,UserId = user.Id };
+				await _accessTokenService.Save(accessToken);
+				Dictionary<string,object> dic = new Dictionary<string,object>();
+				dic.Add("jwtToken", accessToken);
+				bool b = await _userService.CreateAsync(u);
 				if (b)
 				{
-					return APIResultHelper.Success(u);
+					return APIResultHelper.Success(dic);
 				} else
 				{
 					return APIResultHelper.Error("注册失败");
@@ -82,5 +106,6 @@ namespace MyForum.Api.Controllers
 				return APIResultHelper.Error("账号已存在");
 			}
 		}
+		
 	}
 }

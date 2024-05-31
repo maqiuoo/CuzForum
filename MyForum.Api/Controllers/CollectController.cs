@@ -43,7 +43,7 @@ namespace MyForum.Api.Controllers
 			bool b = await notificationService.Create(topicId, user.Id, topic.UserId.Value, "COLLECT");
 			if (b)
 			{
-				return APIResultHelper.Success(null);
+				return APIResultHelper.Success();
 			} else
 			{
 				return APIResultHelper.Error("出现错误");

@@ -90,7 +90,7 @@ namespace MyForum.Api.Controllers
 			{
 				admins.Add(section.Value);
 			}
-			if (user.Id != comment.UserId || !admins.Contains(user.Username))
+			if (user.Id != comment.UserId || (admins.Count > 0 && !admins.Contains(user.Username)))
 			{
 				return APIResultHelper.Error("不能修改别人的评论");
 			}
@@ -109,7 +109,7 @@ namespace MyForum.Api.Controllers
 				return APIResultHelper.Error("更新失败");
 			}
 		}
-		[HttpPost("delete")]
+		[HttpGet("delete")]
 		public async Task<APIResult> Delete([FromForm] int commentId)
 		{
 			User user = await GetUser();
@@ -120,7 +120,7 @@ namespace MyForum.Api.Controllers
 			{
 				admins.Add(section.Value);
 			}
-			if (user.Id != comment.UserId || !admins.Contains(user.Username))
+			if (user.Id != comment.UserId || (admins.Count > 0 && !admins.Contains(user.Username)))
 			{
 				return APIResultHelper.Error("不能删除别人的评论");
 			}

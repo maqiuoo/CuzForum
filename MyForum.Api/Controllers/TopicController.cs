@@ -84,7 +84,7 @@ namespace MyForum.Api.Controllers
 		[HttpPost("create")]
 		[Authorize]
 		public async Task<APIResult> Create([FromForm] string title, 
-			[FromForm] string url, [FromForm] string content, [FromForm] string tab)
+			[FromForm] string? url, [FromForm] string content, [FromForm] string tab)
 		{
 			User user = await GetUser();
 			Topic topic = new Topic { Title = title, Url = url, Content = content, Tab = tab,InTime = DateTime.Now,User = user };

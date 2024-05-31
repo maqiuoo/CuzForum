@@ -11,24 +11,22 @@ namespace MyForum.JWT.APIResultFile
             return new APIResult {
                 Code = 200,
 				Detail = data,
-                Msg = "操作成功",
-                Total = 0
+				Description = "操作成功"
             };
         }
-        public static APIResult Success(dynamic data,int total) {
-            return new APIResult {
-                Code = 200,
-				Detail = data,
-                Msg = "操作成功",
-                Total = total
-            };
-        }
-        public static APIResult Error(string msg) {
+		public static APIResult Success()
+		{
+			return new APIResult {
+				Code = 200,
+				Detail = null,
+				Description = "操作成功"
+			};
+		}
+		public static APIResult Error(string msg) {
             return new APIResult {
                 Code = 500,
 				Detail = null,
-                Msg = msg,
-                Total = 0
+				Description = msg
             };
         }
     }

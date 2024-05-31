@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using MyForum.BLL;
 using MyForum.BLL.Interface;
 using MyForum.JWT;
+using MyForum.JWT.APIResultFile;
 using MyForum.Model;
 
 namespace MyForum.Api.Controllers
@@ -23,7 +24,7 @@ namespace MyForum.Api.Controllers
 		}
 		[HttpGet]
 		[Route("list")]
-		public async Task<ActionResult> List(int pageNo = 1)
+		public async Task<APIResult> List(int pageNo = 1)
 		{
 			User user = await GetUser();
 			int pageSize = int.Parse(_configuration.GetSection("site").GetSection("pageSize").Value!);
@@ -35,15 +36,15 @@ namespace MyForum.Api.Controllers
 				notification.Topic = topic;
 				notification.User = user;
 			}
-			return Ok(page);
+			return APIResultHelper.Success(page);
 		}
 		[HttpGet]
 		[Route("notRead")]
-		public async Task<ActionResult> NotRead()
+		public async Task<APIResult> NotRead()
 		{
 			User user = await GetUser();
 			long count = await notificationService.CountNotRead(user.Id);
-			return Ok(count);
+			return APIResultHelper.Success(count);
 		}
 	}
 }

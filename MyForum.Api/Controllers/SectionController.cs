@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using MyForum.BLL.Interface;
 using MyForum.JWT;
+using MyForum.JWT.APIResultFile;
 using System.Text.Json;
 
 namespace MyForum.Api.Controllers
@@ -17,7 +18,7 @@ namespace MyForum.Api.Controllers
 		}
 
 		[HttpGet("/section")]
-		public ActionResult Sections()
+		public APIResult Sections()
 		{
 			var configuration = _configuration.GetSection("site").GetSection("sections").GetChildren();
 			Dictionary<string,string> res = new Dictionary<string, string>();
@@ -25,7 +26,7 @@ namespace MyForum.Api.Controllers
 			{
 				res.Add(section.GetSection("name").Value!,section.GetSection("value").Value!);
 			}
-			return Ok(res);
+			return APIResultHelper.Success(res);
 		}
 	}
 }

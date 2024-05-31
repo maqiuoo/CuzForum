@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using MyForum.BLL.Interface;
 using MyForum.JWT;
+using MyForum.JWT.APIResultFile;
 using MyForum.Model;
 
 namespace MyForum.Api.Controllers
@@ -26,13 +27,13 @@ namespace MyForum.Api.Controllers
 		}
 
 		[HttpPost("create")]
-		public async Task<ActionResult> Create([FromForm]int topicId, [FromForm] int? commentId, [FromForm] string content)
+		public async Task<APIResult> Create([FromForm]int topicId, [FromForm] int? commentId, [FromForm] string content)
 		{
 			User user = await GetUser();
 			var topic = await topicService.FindAsync(topicId);
 			if ( topic == null)
 			{
-				return BadRequest("评论不存在");
+				return APIResultHelper.Error("评论不存在");
 			}
 			content = content.Replace("\\n", "<br/>");
 			var targetUserId = topic.UserId.Value;
@@ -42,7 +43,7 @@ namespace MyForum.Api.Controllers
 				Comment _comment = await _commentService.FindAsync(commentId.Value);
 				if(_comment == null )
 				{
-					return BadRequest("回复的评论不存在");
+					return APIResultHelper.Error("回复的评论不存在");
 				}
 				if(topic.UserId != _comment.UserId)
 				{
@@ -67,25 +68,25 @@ namespace MyForum.Api.Controllers
 				user.Score += int.Parse(_configuration.GetSection("site").GetSection("createCommentScore").Value!);
 				await _userService.EditAsync(user);
 				comment.User = user;
-				return Ok(comment);
+				return APIResultHelper.Success(comment);
 			} else
 			{
-				return BadRequest("创建失败");
+				return APIResultHelper.Error("创建失败");
 			}
 		}
 
 		[HttpPost("update")]
-		public async Task<ActionResult> Update([FromForm] int commentId, [FromForm] string content)
+		public async Task<APIResult> Update([FromForm] int commentId, [FromForm] string content)
 		{
 			User user = await GetUser();
 			Comment comment = await _commentService.FindAsync(commentId);
 			if (comment == null)
 			{
-				return BadRequest("没有这条评论");
+				return APIResultHelper.Error("没有这条评论");
 			}
 			if(user.Id!=comment.UserId || !_configuration.GetSection("site").GetSection("admin").Value.Contains(user.Username))
 			{
-				return BadRequest("不能修改别人的评论");
+				return APIResultHelper.Error("不能修改别人的评论");
 			}
 			HtmlDocument htmlDoc = new HtmlDocument();
 			htmlDoc.LoadHtml(comment.Content);
@@ -96,24 +97,24 @@ namespace MyForum.Api.Controllers
 			bool b = await _commentService.EditAsync(comment);
 			if (b)
 			{
-				return Ok();
+				return APIResultHelper.Success();
 			} else
 			{
-				return BadRequest("更新失败");
+				return APIResultHelper.Error("更新失败");
 			}
 		}
 		[HttpPost("delete")]
-		public async Task<ActionResult> Delete([FromForm] int commentId)
+		public async Task<APIResult> Delete([FromForm] int commentId)
 		{
 			User user = await GetUser();
 			Comment comment = await _commentService.FindAsync(commentId);
 			if(user.Id != comment.UserId || !_configuration.GetSection("site").GetSection("admin").Value.Contains(user.Username))
 			{
-				return BadRequest("不能删除别人的评论");
+				return APIResultHelper.Error("不能删除别人的评论");
 			}
 			if (comment == null)
 			{
-				return BadRequest("没有这条评论");
+				return APIResultHelper.Error("没有这条评论");
 			}
 			User commentUser = await _userService.FindAsync(comment.UserId.Value);
 			Topic topic = await topicService.FindAsync(comment.TopicId.Value);
@@ -124,10 +125,10 @@ namespace MyForum.Api.Controllers
 			{
 				commentUser.Score -= int.Parse(_configuration.GetSection("site").GetSection("createCommentScore").Value!);
 				await _userService.EditAsync(commentUser);
-				return Ok();
+				return APIResultHelper.Success();
 			} else
 			{
-				return BadRequest("删除失败");
+				return APIResultHelper.Error("删除失败");
 			}
 		}
 	}

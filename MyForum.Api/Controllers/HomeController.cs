@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyForum.BLL.Interface;
+using MyForum.JWT.APIResultFile;
 using MyForum.Model;
 
 namespace MyForum.Api.Controllers
@@ -21,27 +22,40 @@ namespace MyForum.Api.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult> Home(string? tab,int pageNo = 1)
+		public async Task<APIResult> Home(string? tab,int pageNo = 1)
 		{
 			int pageSize = int.Parse(configuration.GetSection("site").GetSection("pageSize").Value!);
+			int allCount = await _topicService.GetAll();
 			if (tab == null || tab.Equals("all"))
 			{
 				var t = await _topicService.FindAll(pageNo, pageSize, string.Empty);
-				return Ok(t);
+				if (t.Count < allCount)
+				{
+					return APIResultHelper.Success(new { last = false, content = t });
+				} else
+				{
+					return APIResultHelper.Success(new { last = true, content = t });
+				}
 			} else
 			{
 				var topics = await _topicService.FindAll(pageNo, pageSize, tab);
-				return Ok(topics);
+				if (topics.Count < allCount)
+				{
+					return APIResultHelper.Success(new { last = false, content = topics });
+				} else
+				{
+					return APIResultHelper.Success(new { last = true, content = topics });
+				}
 			}
 			
 		}
 		[HttpGet("top100")]
-		public ActionResult Top100(int size = 7)
+		public APIResult Top100(int size = 7)
 		{
 			if (size > 100)
-				return BadRequest("size不能超过100");
+				return APIResultHelper.Error("size不能超过100");
 			var users = _userService.FindTop100(size);
-			return Ok(users);
+			return APIResultHelper.Success(users);
 		}
 	}
 }

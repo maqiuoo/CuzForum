@@ -47,5 +47,9 @@ namespace MyForum.BLL
 				&& await commentService.DeleteByTopicId(id)
 				&& await collectService.DeleteByTopicId(id);	
 		}
+		public Task<int> GetAll()
+		{
+			return topicRepository.GetAll();
+		}
 	}
 }

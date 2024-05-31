@@ -7,8 +7,8 @@ namespace MyForum.JWT.APIResultFile
 {
     public class APIResult {
         public int Code { get; set; }
-        public string Msg { get; set; }
-        public int Total { get; set; }
+        public string Description { get; set; }
+        //public int Total { get; set; }
         public dynamic Detail { get; set; }
     }
 }

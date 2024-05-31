@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using MyForum.BLL.Interface;
 using MyForum.JWT;
+using MyForum.JWT.APIResultFile;
 using MyForum.Model;
 
 namespace MyForum.Api.Controllers
@@ -22,18 +23,18 @@ namespace MyForum.Api.Controllers
 		}
 		[HttpPost]
 		[Route("save")]
-		public async Task<ActionResult> Save(int topicId)
+		public async Task<APIResult> Save(int topicId)
 		{
 			User user = await GetUser();
 			Topic topic = await topicService.FindAsync(topicId);
 			if(topic == null)
 			{
-				return BadRequest("收藏的话题不存在");
+				return APIResultHelper.Error("收藏的话题不存在");
 			}
 			Collect collect = await collectService.FindByUserIdAndTopicId(user.Id, topicId);	
 			if(collect != null)
 			{
-				return BadRequest("已经收藏了这个话题");
+				return APIResultHelper.Error("已经收藏了这个话题");
 			}
 			collect = new Collect() { TopicId =  topicId,UserId = user.Id,InTime = DateTime.Now,Topic=topic,User=user};
 			await collectService.CreateAsync(collect);
@@ -42,36 +43,36 @@ namespace MyForum.Api.Controllers
 			bool b = await notificationService.Create(topicId, user.Id, topic.UserId.Value, "COLLECT");
 			if (b)
 			{
-				return Ok();
+				return APIResultHelper.Success(null);
 			} else
 			{
-				return BadRequest("出现错误");
+				return APIResultHelper.Error("出现错误");
 			}
 		}
 		[HttpPost]
 		[Route("delete")]
-		public async Task<ActionResult> Delete(int topicId)
+		public async Task<APIResult> Delete(int topicId)
 		{
 			User user = await GetUser();
 			Topic topic = await topicService.FindAsync(topicId);
 			if (topic == null)
 			{
-				return BadRequest("要取消收藏的话题不存在");
+				return APIResultHelper.Error("要取消收藏的话题不存在");
 			}
 			Collect collect = await collectService.FindByUserIdAndTopicId(user.Id,topicId);
 			if(collect == null)
 			{
-				return BadRequest("还没有收藏这个话题");
+				return APIResultHelper.Error("还没有收藏这个话题");
 			}
 			topic.CollectCount -= 1;
 			await topicService.EditAsync(topic);
 			bool b = await collectService.DeleteAsync(collect.Id);
 			if (b)
 			{
-				return Ok();
+				return APIResultHelper.Success();
 			} else
 			{
-				return BadRequest("删除出现错误");
+				return APIResultHelper.Error("删除出现错误");
 			}
 		}
 	}

@@ -30,7 +30,11 @@ namespace MyForum.DAL
 			}
 			
 		}
-
+		public async Task<int> GetAll()
+		{
+			var t = dbctx.Topics.ToList();
+			return t.Count;
+		}
 		public async Task<Topic> FindByTitle(string title)
 		{
 			return await dbctx.Topics.FirstOrDefaultAsync(t => t.Title == title);

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using MyForum.BLL;
 using MyForum.BLL.Interface;
 using MyForum.JWT;
+using MyForum.JWT.APIResultFile;
 using MyForum.Model;
 
 namespace MyForum.Api.Controllers
@@ -45,13 +46,13 @@ namespace MyForum.Api.Controllers
 		//}
 
 		[HttpGet("detail")]
-		public async Task<ActionResult> Detail(int id)
+		public async Task<APIResult> Detail(int id)
 		{
 			Dictionary<string,object> dic = new Dictionary<string,object>();
 			Topic topic = await _topicService.FindAsync(id);
 			if (topic == null)
 			{
-				return BadRequest("无此话题");
+				return APIResultHelper.Error("无此话题");
 			}
 			topic.View += 1;
 			
@@ -67,7 +68,7 @@ namespace MyForum.Api.Controllers
 			topic.User = topicUser;
 			bool b = await _topicService.EditAsync(topic);
 			if (!b)
-				return BadRequest();
+				return APIResultHelper.Error("更新失败");
 			List<Comment> comments = await _commentService.FindByTopicId(id);
 			comments.ForEach(async comment =>
 			{
@@ -78,11 +79,11 @@ namespace MyForum.Api.Controllers
 			});
 			dic.Add("topic", topic);
 			dic.Add("comments", comments);
-			return Ok(dic);
+			return APIResultHelper.Success(dic);
 		}
 		[HttpPost("create")]
 		[Authorize]
-		public async Task<ActionResult> Create([FromForm] string title, 
+		public async Task<APIResult> Create([FromForm] string title, 
 			[FromForm] string url, [FromForm] string content, [FromForm] string tab)
 		{
 			User user = await GetUser();
@@ -98,25 +99,25 @@ namespace MyForum.Api.Controllers
 			{
 				user.Score += int.Parse(_configuration.GetSection("site").GetSection("createTopicScore").Value!);
 				await _userService.EditAsync(user);
-				return Ok(topic.Id);
+				return APIResultHelper.Success(topic.Id);
 			} else
 			{
-				return BadRequest("创建话题失败");
+				return APIResultHelper.Error("创建话题失败");
 			}
 		}
 		[HttpPost("update")]
 		[Authorize]
-		public async Task<ActionResult> Update([FromForm]int id, [FromForm] string title, [FromForm] string content, [FromForm] string tab)
+		public async Task<APIResult> Update([FromForm]int id, [FromForm] string title, [FromForm] string content, [FromForm] string tab)
 		{
 			User user = await GetUser();
 			Topic oldTopic = await _topicService.FindAsync(id);
 			if(oldTopic != null)
 			{
-				return BadRequest("话题不存在");
+				return APIResultHelper.Error("话题不存在");
 			}
 			if(user.Id != oldTopic.UserId || !_configuration.GetSection("site").GetSection("admin").Value!.Contains(user.Username))
 			{
-				return BadRequest("无权更改话题");
+				return APIResultHelper.Error("无权更改话题");
 			}
 			oldTopic.Title = title;
 			oldTopic.Content = content;
@@ -125,45 +126,45 @@ namespace MyForum.Api.Controllers
 			bool b = await _topicService.EditAsync(oldTopic);
 			if (b)
 			{
-				return Ok();
+				return APIResultHelper.Success();
 			} else
 			{
-				return BadRequest("更新话题失败");
+				return APIResultHelper.Error("更新话题失败");
 			}
 		}
 
 		[HttpPost("delete")]
 		[Authorize]
-		public async Task<ActionResult> Delete([FromForm] int id)
+		public async Task<APIResult> Delete([FromForm] int id)
 		{
 			User user = await GetUser();
 			Topic topic = await _topicService.FindAsync(id);
 			if(user.Id != topic.UserId || !_configuration.GetSection("site").GetSection("admin").Value!.Contains(user.Username))
 			{
-				return BadRequest("无权删除话题");
+				return APIResultHelper.Error("无权删除话题");
 			}
 			bool b = await _topicService.DeleteAsync(id);
 			if (b)
 			{
 
-				return Ok();
+				return APIResultHelper.Success();
 			} else
 			{
-				return BadRequest("删除话题失败");
+				return APIResultHelper.Error("删除话题失败");
 			}
 		}
 
 		[HttpGet("good")]
 		[Authorize]
-		public async Task<ActionResult> Good([FromForm] int id)
+		public async Task<APIResult> Good([FromForm] int id)
 		{
 			User user = await GetUser();
 			Topic oldTopic = await _topicService.FindAsync(id);
 			if (oldTopic == null)
-				return BadRequest("没有此话题");
+				return APIResultHelper.Error("没有此话题");
 			if (!_configuration.GetSection("site").GetSection("admin").Value!.Contains(user.Username))
 			{
-				return BadRequest("没有权限");
+				return APIResultHelper.Error("没有权限");
 			}
 			User topicUser = await _userService.FindAsync(oldTopic.UserId.Value);
 			oldTopic.Good = !oldTopic.Good;
@@ -178,33 +179,33 @@ namespace MyForum.Api.Controllers
 			bool b = await _topicService.EditAsync(oldTopic);
 			if (b)
 			{
-				return Ok();
+				return APIResultHelper.Success();
 			} else
 			{
-				return BadRequest("话题加精（取消）失败");
+				return APIResultHelper.Error("话题加精（取消）失败");
 			}
 		}
 
 		[HttpGet("top")]
 		[Authorize]
-		public async Task<ActionResult> Top([FromForm] int id)
+		public async Task<APIResult> Top([FromForm] int id)
 		{
 			User user = await GetUser();
 			Topic topic = await _topicService.FindAsync(id);
 			if (topic == null)
-				return BadRequest("不存在");
+				return APIResultHelper.Error("不存在");
 			if (!_configuration.GetSection("site").GetSection("admin").Value!.Contains(user.Username))
 			{
-				return BadRequest("没有权限");
+				return APIResultHelper.Error("没有权限");
 			}
 			topic.Top = !topic.Top;
 			bool b = await _topicService.EditAsync(topic);
 			if (b)
 			{
-				return Ok();
+				return APIResultHelper.Success();
 			} else
 			{
-				return BadRequest("话题置顶（取消）失败");
+				return APIResultHelper.Error("话题置顶（取消）失败");
 			}
 		}
 	}

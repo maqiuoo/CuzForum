@@ -77,10 +77,10 @@ namespace MyForum.Api.Controllers
 		}
 
 		[HttpPost("update")]
-		public async Task<APIResult> Update([FromForm] int commentId, [FromForm] string content)
+		public async Task<APIResult> Update([FromForm] int id, [FromForm] string content)
 		{
 			User user = await GetUser();
-			Comment comment = await _commentService.FindAsync(commentId);
+			Comment comment = await _commentService.FindAsync(id);
 			if (comment == null)
 			{
 				return APIResultHelper.Error("没有这条评论");
@@ -111,10 +111,10 @@ namespace MyForum.Api.Controllers
 			}
 		}
 		[HttpGet("delete")]
-		public async Task<APIResult> Delete(int commentId)
+		public async Task<APIResult> Delete(int id)
 		{
 			User user = await GetUser();
-			Comment comment = await _commentService.FindAsync(commentId);
+			Comment comment = await _commentService.FindAsync(id);
 			if (comment == null)
 			{
 				return APIResultHelper.Error("没有这条评论");
@@ -133,7 +133,7 @@ namespace MyForum.Api.Controllers
 			Topic topic = await topicService.FindAsync(comment.TopicId.Value);
 			topic.CommentCount -= 1;
 			await topicService.EditAsync(topic);
-			bool b = await _commentService.DeleteAsync(commentId);
+			bool b = await _commentService.DeleteAsync(id);
 			if (b)
 			{
 				commentUser.Score -= int.Parse(_configuration.GetSection("site").GetSection("createCommentScore").Value!);

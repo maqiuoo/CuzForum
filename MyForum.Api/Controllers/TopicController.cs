@@ -111,11 +111,17 @@ namespace MyForum.Api.Controllers
 		{
 			User user = await GetUser();
 			Topic oldTopic = await _topicService.FindAsync(id);
-			if(oldTopic != null)
+			if(oldTopic == null)
 			{
 				return APIResultHelper.Error("话题不存在");
 			}
-			if(user.Id != oldTopic.UserId || !_configuration.GetSection("site").GetSection("admin").Value!.Contains(user.Username))
+			var sections = _configuration.GetSection("site").GetSection("admin").GetChildren().ToList();
+			List<string> admins = new List<string>();
+			foreach(var section in sections)
+			{
+				admins.Add(section.Value);
+			}
+			if (user.Id != oldTopic.UserId || !admins.Contains(user.Username))
 			{
 				return APIResultHelper.Error("无权更改话题");
 			}
@@ -133,13 +139,19 @@ namespace MyForum.Api.Controllers
 			}
 		}
 
-		[HttpPost("delete")]
+		[HttpGet("delete")]
 		[Authorize]
 		public async Task<APIResult> Delete([FromForm] int id)
 		{
 			User user = await GetUser();
 			Topic topic = await _topicService.FindAsync(id);
-			if(user.Id != topic.UserId || !_configuration.GetSection("site").GetSection("admin").Value!.Contains(user.Username))
+			var sections = _configuration.GetSection("site").GetSection("admin").GetChildren().ToList();
+			List<string> admins = new List<string>();
+			foreach (var section in sections)
+			{
+				admins.Add(section.Value);
+			}
+			if (user.Id != topic.UserId || !admins.Contains(user.Username))
 			{
 				return APIResultHelper.Error("无权删除话题");
 			}
@@ -162,9 +174,15 @@ namespace MyForum.Api.Controllers
 			Topic oldTopic = await _topicService.FindAsync(id);
 			if (oldTopic == null)
 				return APIResultHelper.Error("没有此话题");
-			if (!_configuration.GetSection("site").GetSection("admin").Value!.Contains(user.Username))
+			var sections = _configuration.GetSection("site").GetSection("admin").GetChildren().ToList();
+			List<string> admins = new List<string>();
+			foreach (var section in sections)
 			{
-				return APIResultHelper.Error("没有权限");
+				admins.Add(section.Value);
+			}
+			if (user.Id != oldTopic.UserId || !admins.Contains(user.Username))
+			{
+				return APIResultHelper.Error("无权");
 			}
 			User topicUser = await _userService.FindAsync(oldTopic.UserId.Value);
 			oldTopic.Good = !oldTopic.Good;
@@ -194,9 +212,15 @@ namespace MyForum.Api.Controllers
 			Topic topic = await _topicService.FindAsync(id);
 			if (topic == null)
 				return APIResultHelper.Error("不存在");
-			if (!_configuration.GetSection("site").GetSection("admin").Value!.Contains(user.Username))
+			var sections = _configuration.GetSection("site").GetSection("admin").GetChildren().ToList();
+			List<string> admins = new List<string>();
+			foreach (var section in sections)
 			{
-				return APIResultHelper.Error("没有权限");
+				admins.Add(section.Value);
+			}
+			if (user.Id != topic.UserId || !admins.Contains(user.Username))
+			{
+				return APIResultHelper.Error("无权");
 			}
 			topic.Top = !topic.Top;
 			bool b = await _topicService.EditAsync(topic);

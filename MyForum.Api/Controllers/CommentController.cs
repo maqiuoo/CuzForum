@@ -84,7 +84,13 @@ namespace MyForum.Api.Controllers
 			{
 				return APIResultHelper.Error("没有这条评论");
 			}
-			if(user.Id!=comment.UserId || !_configuration.GetSection("site").GetSection("admin").Value.Contains(user.Username))
+			var sections = _configuration.GetSection("site").GetSection("admin").GetChildren().ToList();
+			List<string> admins = new List<string>();
+			foreach (var section in sections)
+			{
+				admins.Add(section.Value);
+			}
+			if (user.Id != comment.UserId || !admins.Contains(user.Username))
 			{
 				return APIResultHelper.Error("不能修改别人的评论");
 			}
@@ -108,7 +114,13 @@ namespace MyForum.Api.Controllers
 		{
 			User user = await GetUser();
 			Comment comment = await _commentService.FindAsync(commentId);
-			if(user.Id != comment.UserId || !_configuration.GetSection("site").GetSection("admin").Value.Contains(user.Username))
+			var sections = _configuration.GetSection("site").GetSection("admin").GetChildren().ToList();
+			List<string> admins = new List<string>();
+			foreach (var section in sections)
+			{
+				admins.Add(section.Value);
+			}
+			if (user.Id != comment.UserId || !admins.Contains(user.Username))
 			{
 				return APIResultHelper.Error("不能删除别人的评论");
 			}

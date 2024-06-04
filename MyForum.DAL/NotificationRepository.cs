@@ -42,7 +42,7 @@ namespace MyForum.DAL
 		public async Task<List<Notification>> FindByUserId(int targetUserId, int pageNo, int pageSize)
 		{
 			var notifications = dbctx.Notifications
-				.Skip(pageNo-1).Take(pageSize).OrderBy(x=>x.Read).ThenBy(x=>x.InTime);
+				.Skip((pageNo - 1) * pageSize).Take(pageSize).OrderBy(x=>x.Read).ThenBy(x=>x.InTime);
 			return notifications.Where(x => x.TargetUserId == targetUserId).ToList();
 		}
 

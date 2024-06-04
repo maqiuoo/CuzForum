@@ -30,7 +30,7 @@ namespace MyForum.DAL
 
 		public async Task<List<Collect>> FindByUserId(int userId, int pageNo, int pageSize)
 		{
-			var collects = dbctx.Collects.Skip(pageNo - 1).Take(pageSize).OrderByDescending(c => c.InTime);
+			var collects = dbctx.Collects.Skip((pageNo - 1) * pageSize).Take(pageSize).OrderByDescending(c => c.InTime);
 			return await collects.Where(c => c.UserId == userId).ToListAsync();
 		}
 

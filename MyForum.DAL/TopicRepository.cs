@@ -20,13 +20,13 @@ namespace MyForum.DAL
 		public async Task<List<Topic>> FindAll(int pageNo, int pageSize, string? tab)
 		{
 			var t = dbctx.Topics.OrderByDescending(t => t.Top).ThenByDescending(t => t.InTime);
-			var topics = t.Skip(pageNo-1).Take(pageSize).ToList();
+			var topics = t.Skip((pageNo-1)* pageSize).Take(pageSize).ToList();
 			if (string.IsNullOrEmpty(tab))
 			{
 				return topics;
 			} else
 			{
-				return t.Where(t=>t.Tab == tab).Skip(pageNo - 1).Take(pageSize).ToList();
+				return t.Where(t=>t.Tab == tab).Skip((pageNo - 1) * pageSize).Take(pageSize).ToList();
 			}
 			
 		}
@@ -47,7 +47,7 @@ namespace MyForum.DAL
 
 		public async Task<List<Topic>> FindByUserId(int userId, int pageNo, int pageSize)
 		{
-			var topics = dbctx.Topics.Where(t => t.UserId == userId).Skip(pageNo - 1).Take(pageSize).ToList();
+			var topics = dbctx.Topics.Where(t => t.UserId == userId).Skip((pageNo - 1) * pageSize).Take(pageSize).ToList();
 			return topics;
 		}
 	}

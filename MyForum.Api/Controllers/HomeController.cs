@@ -28,23 +28,24 @@ namespace MyForum.Api.Controllers
 			int allCount = await _topicService.GetAll();
 			if (tab == null || tab.Equals("all"))
 			{
-				var t = await _topicService.FindAll(pageNo, pageSize, string.Empty);
-				if (t.Count < allCount)
+				var topics = await _topicService.FindAll(pageNo, pageSize, string.Empty);
+				//所有话题数量等于获取话题数量或获取话题数量小于该页话题数量
+				if (topics.Count == allCount || topics.Count < pageSize)
 				{
-					return APIResultHelper.Success(new { last = false, content = t });
+					return APIResultHelper.Success(new { last = true, content = topics });
 				} else
 				{
-					return APIResultHelper.Success(new { last = true, content = t });
+					return APIResultHelper.Success(new { last = false, content = topics });
 				}
 			} else
 			{
 				var topics = await _topicService.FindAll(pageNo, pageSize, tab);
-				if (topics.Count < allCount)
-				{
-					return APIResultHelper.Success(new { last = false, content = topics });
-				} else
+				if (topics.Count == allCount || topics.Count < pageSize)
 				{
 					return APIResultHelper.Success(new { last = true, content = topics });
+				} else
+				{
+					return APIResultHelper.Success(new { last = false, content = topics });
 				}
 			}
 			

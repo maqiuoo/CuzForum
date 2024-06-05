@@ -70,13 +70,14 @@ namespace MyForum.Api.Controllers
 			if (!b)
 				return APIResultHelper.Error("更新失败");
 			List<Comment> comments = await _commentService.FindByTopicId(id);
-			comments.ForEach(async comment =>
+			foreach (var comment in comments)
 			{
 				comment.User = await _userService.FindAsync(comment.UserId.Value);
-				if (comment.SecondComment != null)		{
+				if (comment.SecondComment != null)
+				{
 					comment.SecondComment = await _commentService.FindAsync(comment.CommentId.Value);
 				}
-			});
+			}
 			dic.Add("topic", topic);
 			dic.Add("comments", comments);
 			return APIResultHelper.Success(dic);

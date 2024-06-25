@@ -12,5 +12,6 @@ namespace MyForum.BLL.Interface
 		Task<List<Comment>> FindByTopicId(int topicId);
 		Task<bool> DeleteByTopicId(int topicId);
 		Task<List<Comment>> FindByUserId(int userId);
+		Task<List<Comment>> FindByUserId(int userId, int pageNo, int pageSize);
 	}
 }

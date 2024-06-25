@@ -32,5 +32,9 @@ namespace MyForum.BLL
 		{
 			return commentRepository.FindByUserId(userId);
 		}
+		public async Task<List<Comment>> FindByUserId(int userId, int pageNo, int pageSize)
+		{
+			return await commentRepository.FindByUserId(userId, pageNo, pageSize);
+		}
 	}
 }

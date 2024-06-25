@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
+﻿using Ganss.Xss;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MyForum.BLL;
 using MyForum.BLL.Interface;
 using MyForum.JWT;
 using MyForum.JWT.APIResultFile;
@@ -14,13 +15,19 @@ using System.Text;
 
 namespace MyForum.Api.Controllers
 {
-	[Route("/")]
+	[Route("/user")]
 	[ApiController]
 	[EnableCors("MyPolicy")]
 	public class AuthorizeController : BaseController
 	{
-		public AuthorizeController(IOptions<JWTSettings> options, IUserService userService, IAccessTokenService accessTokenService, IConfiguration configuration) : base(options, userService, accessTokenService, configuration)
+		private readonly ITopicService topicService;
+		private readonly ICommentService commentService;
+		private readonly ICollectService collectService;
+		public AuthorizeController(IOptions<JWTSettings> options, IUserService userService, IAccessTokenService accessTokenService, IConfiguration configuration, ITopicService topicService, ICommentService commentService, ICollectService collectService) : base(options, userService, accessTokenService, configuration)
 		{
+			this.topicService = topicService;
+			this.commentService = commentService;
+			this.collectService = collectService;
 		}
 
 		//public AuthorizeController(IUserService iUserService, IConfiguration configuration, IAccessTokenService accessTokenService)
@@ -106,6 +113,149 @@ namespace MyForum.Api.Controllers
 				return APIResultHelper.Error("账号已存在");
 			}
 		}
-		
+
+		[HttpGet("{username}")]
+		public async Task<APIResult> Index(string username)
+		{
+			User user = await _userService.FindByUserName(username);
+			return APIResultHelper.Success(user);
+		}
+
+		[HttpGet("{username}/topics")]
+		public async Task<APIResult> Topics(string username,int pageSize, int pageNo = 1)
+		{
+			if(pageSize > int.Parse(_configuration.GetSection("site").GetSection("pageSize").Value!))
+			{
+				pageSize = int.Parse(_configuration.GetSection("site").GetSection("pageSize").Value!);
+			}
+			User user = await _userService.FindByUserName(username);
+			if(user == null)
+			{
+				return APIResultHelper.Error("user不存在");
+			}
+			var page = await topicService.FindByUserId(user.Id,pageNo,pageSize);
+			foreach (var topic in page)
+			{
+				topic.User = user;
+			}
+			return APIResultHelper.Success(page);
+		}
+
+		[HttpGet("{username}/comments")]
+		public async Task<APIResult> Comments(string username,int pageSize, int pageNo = 1)
+		{
+			if (pageSize > int.Parse(_configuration.GetSection("site").GetSection("pageSize").Value!))
+			{
+				pageSize = int.Parse(_configuration.GetSection("site").GetSection("pageSize").Value!);
+			}
+			User user = await _userService.FindByUserName(username);
+			if (user == null)
+			{
+				return APIResultHelper.Error("user不存在");
+			}
+			var page = await commentService.FindByUserId(user.Id, pageNo, pageSize);
+			foreach(var comment in page)
+			{
+				comment.User = user;
+				comment.Topic = await topicService.FindAsync(comment.TopicId.Value);
+				if (comment.CommentId.HasValue)
+				{
+					comment.SecondComment = await commentService.FindAsync(comment.CommentId.Value);
+				}
+			}
+			return APIResultHelper.Success(page);
+		}
+
+		[HttpGet("{username}/collects")]
+		public async Task<APIResult> Collects(string username,int pageSize, int pageNo = 1)
+		{
+			if (pageSize > int.Parse(_configuration.GetSection("site").GetSection("pageSize").Value!))
+			{
+				pageSize = int.Parse(_configuration.GetSection("site").GetSection("pageSize").Value!);
+			}
+			User user = await _userService.FindByUserName(username);
+			if (user == null)
+			{
+				return APIResultHelper.Error("user不存在");
+			}
+			var page = await collectService.FindByUserId(user.Id, pageNo, pageSize);
+			foreach(var collect in page)
+			{
+				collect.User = user;
+				collect.Topic = await topicService.FindAsync(collect.TopicId.Value);
+			}
+			return APIResultHelper.Success(page);
+		}
+
+		[HttpGet("settings/profile")]
+		public async Task<APIResult> Profile()
+		{
+			User user = await GetUser();
+			var sections = _configuration.GetSection("site").GetSection("admin").GetChildren().ToList();
+			List<string> admins = new List<string>();
+			foreach (var section in sections)
+			{
+				admins.Add(section.Value);
+			}
+			if (admins.Contains(user.Username))
+			{
+				user.IsAdmin = true;
+			}
+			return APIResultHelper.Success(user);
+		}
+
+		[HttpPost("settings/profile")]
+		public async Task<APIResult> Profile(string email,string website,string bio,string avatar)
+		{
+			var sanitizer = new HtmlSanitizer();
+			sanitizer.AllowedTags.Clear(); // 确保没有允许的标签，类似于Whitelist.none()
+			User user = await GetUser();
+			if (!string.IsNullOrEmpty(email))
+			{
+				User _user = await _userService.FindByUserEmail(email);
+				if(_user != null && !email.Equals(user.Email))
+				{
+					return APIResultHelper.Error("邮箱已被占用");
+				}
+				var cleanEmail = sanitizer.Sanitize(email);
+				user.Email = cleanEmail;
+			}
+			if (!string.IsNullOrEmpty(website))
+			{
+				var cleanWebsite = sanitizer.Sanitize(website);
+				user.Website = cleanWebsite;
+			}
+			if (!string.IsNullOrEmpty(bio))
+			{
+				var cleanBio = sanitizer.Sanitize(bio);
+				user.Bio = cleanBio;
+			}
+			if (!string.IsNullOrEmpty(avatar))
+			{
+				var cleanAvatar = sanitizer.Sanitize(avatar);
+				user.Avatar = cleanAvatar;
+			}
+			await _userService.EditAsync(user);
+			return APIResultHelper.Success();
+		}
+
+		[HttpPost("/settings/updatePassword")]
+		public async Task<APIResult> UpdatePassword(string rawPassword,string newPassword)
+		{
+			User user = await GetUser();
+			if(string.IsNullOrEmpty(rawPassword) || string.IsNullOrEmpty(newPassword))
+			{
+				return APIResultHelper.Error("新密码或旧密码不能为空");
+			}
+			//原密码输入错误
+			if (!user.Password.Equals(MD5Helper.MD5Encrypt32(rawPassword)))
+			{
+				return APIResultHelper.Error("原密码输入错误");
+			} else
+			{
+				await _accessTokenService.DeleteByUserId(user.Id);
+				return APIResultHelper.Success();
+			}
+		}
 	}
 }

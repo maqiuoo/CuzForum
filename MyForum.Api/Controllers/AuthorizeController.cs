@@ -254,7 +254,15 @@ namespace MyForum.Api.Controllers
 			} else
 			{
 				await _accessTokenService.DeleteByUserId(user.Id);
-				return APIResultHelper.Success();
+				user.Password = MD5Helper.MD5Encrypt32(newPassword);
+				if(await _userService.EditAsync(user))
+				{
+					return APIResultHelper.Success();
+				} else
+				{
+					return APIResultHelper.Error("修改密码失败");
+				}
+					
 			}
 		}
 	}

@@ -205,7 +205,7 @@ namespace MyForum.Api.Controllers
 		}
 
 		[HttpPost("user/settings/profile")]
-		public async Task<APIResult> Profile([FromForm] string? email, [FromForm] string? website, [FromForm] string? bio, [FromForm] IFormFile? avatar)
+		public async Task<APIResult> Profile([FromForm] string? email, [FromForm] string? website, [FromForm] string? bio, IFormFile? avatar)
 		{
 			User user = await GetUser();
 			var sanitizer = new HtmlSanitizer();

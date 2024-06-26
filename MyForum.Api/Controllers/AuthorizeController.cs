@@ -15,7 +15,7 @@ using System.Text;
 
 namespace MyForum.Api.Controllers
 {
-	[Route("/user")]
+	[Route("/")]
 	[ApiController]
 	[EnableCors("MyPolicy")]
 	public class AuthorizeController : BaseController
@@ -114,14 +114,14 @@ namespace MyForum.Api.Controllers
 			}
 		}
 
-		[HttpGet("{username}")]
+		[HttpGet("user/{username}")]
 		public async Task<APIResult> Index(string username)
 		{
 			User user = await _userService.FindByUserName(username);
 			return APIResultHelper.Success(user);
 		}
 
-		[HttpGet("{username}/topics")]
+		[HttpGet("user/{username}/topics")]
 		public async Task<APIResult> Topics(string username,int pageSize, int pageNo = 1)
 		{
 			if(pageSize > int.Parse(_configuration.GetSection("site").GetSection("pageSize").Value!))
@@ -141,7 +141,7 @@ namespace MyForum.Api.Controllers
 			return APIResultHelper.Success(page);
 		}
 
-		[HttpGet("{username}/comments")]
+		[HttpGet("user/{username}/comments")]
 		public async Task<APIResult> Comments(string username,int pageSize, int pageNo = 1)
 		{
 			if (pageSize > int.Parse(_configuration.GetSection("site").GetSection("pageSize").Value!))
@@ -166,7 +166,7 @@ namespace MyForum.Api.Controllers
 			return APIResultHelper.Success(page);
 		}
 
-		[HttpGet("{username}/collects")]
+		[HttpGet("user/{username}/collects")]
 		public async Task<APIResult> Collects(string username,int pageSize, int pageNo = 1)
 		{
 			if (pageSize > int.Parse(_configuration.GetSection("site").GetSection("pageSize").Value!))
@@ -187,7 +187,7 @@ namespace MyForum.Api.Controllers
 			return APIResultHelper.Success(page);
 		}
 
-		[HttpGet("settings/profile")]
+		[HttpGet("user/settings/profile")]
 		public async Task<APIResult> Profile()
 		{
 			User user = await GetUser();
@@ -204,7 +204,7 @@ namespace MyForum.Api.Controllers
 			return APIResultHelper.Success(user);
 		}
 
-		[HttpPost("settings/profile")]
+		[HttpPost("user/settings/profile")]
 		public async Task<APIResult> Profile([FromForm] string? email, [FromForm] string? website, [FromForm] string? bio, [FromForm] string? avatar)
 		{
 			var sanitizer = new HtmlSanitizer();
@@ -239,7 +239,7 @@ namespace MyForum.Api.Controllers
 			return APIResultHelper.Success();
 		}
 
-		[HttpPost("settings/updatePassword")]
+		[HttpPost("user/settings/updatePassword")]
 		public async Task<APIResult> UpdatePassword([FromForm] string rawPassword, [FromForm] string newPassword)
 		{
 			User user = await GetUser();

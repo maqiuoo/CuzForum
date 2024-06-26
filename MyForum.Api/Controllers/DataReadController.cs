@@ -17,15 +17,19 @@ namespace MyForum.Api.Controllers
 	{
 		private readonly IWebHostEnvironment _environment;
 		private readonly ITableReadRepository tableReadRepository;
-		private readonly IReptileDataRepository<Book> reptileDataRepository;
+		private readonly IBooksRepository booksRepository;
+		private readonly ISchoolNotificationRepository schoolNotificationRepository;
+		private readonly ILectureRepository lectureRepository;
 		private readonly IMapper mapper;
 
-		public DataReadController(IWebHostEnvironment environment, ITableReadRepository tableReadRepository, IMapper mapper, IReptileDataRepository<Book> reptileDataRepository)
+		public DataReadController(IWebHostEnvironment environment, ITableReadRepository tableReadRepository, IMapper mapper, IBooksRepository booksRepository, ISchoolNotificationRepository schoolNotificationRepository, ILectureRepository lectureRepository)
 		{
 			_environment = environment;
 			this.tableReadRepository = tableReadRepository;
 			this.mapper = mapper;
-			this.reptileDataRepository = reptileDataRepository;
+			this.booksRepository = booksRepository;
+			this.schoolNotificationRepository = schoolNotificationRepository;
+			this.lectureRepository = lectureRepository;
 		}
 		[HttpPost]
 		[Route("uploadFile")]
@@ -159,12 +163,26 @@ namespace MyForum.Api.Controllers
 		public async Task<ActionResult> GetBooks()
 		{
 			List<ReptileDataDTO> reptileDataDTOs = new List<ReptileDataDTO>();
-			var datas = await reptileDataRepository.GetAll();
+			var datas = await booksRepository.GetAll();
 			foreach(var data in datas)
 			{
 				reptileDataDTOs.Add(mapper.Map<ReptileDataDTO>(data));
 			}
 			return Ok(reptileDataDTOs);
+		}
+		[HttpGet]
+		[Route("lectures")]
+		public async Task<ActionResult> GetLectures()
+		{
+			var datas = await lectureRepository.GetAll();
+			return Ok(datas);
+		}
+		[HttpGet]
+		[Route("notification")]
+		public async Task<ActionResult> GetNotification()
+		{
+			var datas = await schoolNotificationRepository.GetAll();
+			return Ok(datas);
 		}
 	}
 }

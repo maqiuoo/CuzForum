@@ -205,7 +205,7 @@ namespace MyForum.Api.Controllers
 		}
 
 		[HttpPost("settings/profile")]
-		public async Task<APIResult> Profile(string email,string website,string bio,string avatar)
+		public async Task<APIResult> Profile([FromForm] string? email, [FromForm] string? website, [FromForm] string? bio, [FromForm] string? avatar)
 		{
 			var sanitizer = new HtmlSanitizer();
 			sanitizer.AllowedTags.Clear(); // 确保没有允许的标签，类似于Whitelist.none()
@@ -239,8 +239,8 @@ namespace MyForum.Api.Controllers
 			return APIResultHelper.Success();
 		}
 
-		[HttpPost("/settings/updatePassword")]
-		public async Task<APIResult> UpdatePassword(string rawPassword,string newPassword)
+		[HttpPost("settings/updatePassword")]
+		public async Task<APIResult> UpdatePassword([FromForm] string rawPassword, [FromForm] string newPassword)
 		{
 			User user = await GetUser();
 			if(string.IsNullOrEmpty(rawPassword) || string.IsNullOrEmpty(newPassword))

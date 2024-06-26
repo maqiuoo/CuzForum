@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using MyForum.DAL.Interface;
 using MyForum.Model;
+using MyForum.Model.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;

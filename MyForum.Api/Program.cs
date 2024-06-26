@@ -12,8 +12,8 @@ using MyForum.DAL.ReptileData;
 using MyForum.DAL.ReptileDataInterface;
 using MyForum.DAL.ReptileDataRepository;
 using MyForum.JWT;
-using MyForum.Model;
 using MyForum.Model.DTO;
+using MyForum.Model.Model;
 using MyForum.Model.ReptlieModel;
 using System.Text;
 

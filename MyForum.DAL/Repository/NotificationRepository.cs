@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyForum.DAL.Interface;
 using MyForum.Model;
+using MyForum.Model.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -210,7 +210,7 @@ namespace MyForum.Api.Controllers
 			User user = await GetUser();
 			var sanitizer = new HtmlSanitizer();
 			sanitizer.AllowedTags.Clear(); // 确保没有允许的标签，类似于Whitelist.none()
-			if (avatar == null || avatar.Length == 0)
+			if (avatar == null)
 			{
 				return APIResultHelper.Error("请上传文件");
 			}

@@ -205,19 +205,19 @@ namespace MyForum.Api.Controllers
 		}
 
 		[HttpPost("user/settings/profile")]
-		public async Task<APIResult> Profile([FromForm] string? email, [FromForm] string? website, [FromForm] string? bio, IFormFile? avatarFile)
+		public async Task<APIResult> Profile([FromForm] string? email, [FromForm] string? website, [FromForm] string? bio, IFormFile? avatar)
 		{
 			User user = await GetUser();
 			var sanitizer = new HtmlSanitizer();
 			sanitizer.AllowedTags.Clear(); // 确保没有允许的标签，类似于Whitelist.none()
-			if (avatarFile == null)
+			if (avatar == null)
 			{
 				return APIResultHelper.Error("请上传文件");
 			}
 			string base64String;
 			using (var memoryStream = new MemoryStream())
 			{
-				await avatarFile.CopyToAsync(memoryStream);
+				await avatar.CopyToAsync(memoryStream);
 				byte[] fileBytes = memoryStream.ToArray();
 				base64String = Convert.ToBase64String(fileBytes);
 			}

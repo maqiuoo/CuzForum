@@ -3,22 +3,24 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyForum.Api.Utility;
 using MyForum.DAL.Interface;
+using MyForum.DAL.ReptileDataInterface;
 using MyForum.Model;
 using MyForum.Model.DTO;
+using MyForum.Model.ReptlieModel;
 using System.Drawing;
 
 namespace MyForum.Api.Controllers
 {
-	[Route("/")]
+    [Route("/")]
 	[ApiController]
 	public class DataReadController : ControllerBase
 	{
 		private readonly IWebHostEnvironment _environment;
 		private readonly ITableReadRepository tableReadRepository;
-		private readonly IReptileDataRepository reptileDataRepository;
+		private readonly IReptileDataRepository<Book> reptileDataRepository;
 		private readonly IMapper mapper;
 
-		public DataReadController(IWebHostEnvironment environment, ITableReadRepository tableReadRepository, IMapper mapper, IReptileDataRepository reptileDataRepository)
+		public DataReadController(IWebHostEnvironment environment, ITableReadRepository tableReadRepository, IMapper mapper, IReptileDataRepository<Book> reptileDataRepository)
 		{
 			_environment = environment;
 			this.tableReadRepository = tableReadRepository;
@@ -26,7 +28,7 @@ namespace MyForum.Api.Controllers
 			this.reptileDataRepository = reptileDataRepository;
 		}
 		[HttpPost]
-		[Route("upload")]
+		[Route("uploadFile")]
 		public async Task<IActionResult> Upload(IFormFile file)
 		{
 			if (file == null || file.Length == 0)

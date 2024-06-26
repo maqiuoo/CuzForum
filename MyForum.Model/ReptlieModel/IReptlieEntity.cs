@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyForum.Model
+namespace MyForum.Model.ReptlieModel
 {
-	public class ReptileData :IEntity
+	public interface IReptlieEntity
 	{
 		public int Id { get; set; }
-		public string BookTitle {  get; set; }
-		public int Clicks {  get; set; }
+		public string title {  get; set; }
 	}
 }

@@ -8,7 +8,7 @@ using MyForum.Model;
 
 namespace MyForum.Api.Controllers
 {
-	[Route("/")]
+	[Route("/collect")]
 	[ApiController]
 	public class CollectController : BaseController
 	{

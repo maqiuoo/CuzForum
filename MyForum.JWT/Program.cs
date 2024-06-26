@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MyForum.BLL;
 using MyForum.BLL.Interface;
-using MyForum.DAL;
 using MyForum.DAL.Interface;
+using MyForum.DAL.Repository;
 using MyForum.Model;
 using System.Data;
 using System.Text;
 
 namespace MyForum.JWT
 {
-	public class Program
+    public class Program
 	{
 		public static void Main(string[] args)
 		{

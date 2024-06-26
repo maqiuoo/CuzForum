@@ -1,8 +1,12 @@
 ﻿
 using MyForum.DAL;
-using MyForum.DAL.Interface;
+using MyForum.DAL.ReptileDataInterface;
+using MyForum.DAL.ReptileDataRepository;
 using MyForum.Model;
+using MyForum.Model.ReptlieModel;
 using System.Diagnostics;
+using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MyForum.Api.Py
 {
@@ -26,9 +30,10 @@ namespace MyForum.Api.Py
 
         private void DoWork(object state)
         {
-            // 做一些周期性工作
-            ExecutePy();
-
+			// 做一些周期性工作
+			ExecuteBooksPy();
+			ExecuteLecturePy();
+			ExecuteSchoolNotificationPy();
 		}
 
         public Task StopAsync(CancellationToken cancellationToken)
@@ -41,55 +46,195 @@ namespace MyForum.Api.Py
         {
             _timer?.Dispose();
         }
-        public async void ExecutePy()
-        {
-            string pythonInterpreter = configuration.GetSection("pythonInterpreter").Value;
+		#region Books
+		public async void ExecuteBooksPy()
+		{
+			string pythonInterpreter = configuration.GetSection("pythonInterpreter").Value!;
 
 			// 设置Python脚本的路径
-			string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+			string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "Py\\";
 			// 创建文件的绝对路径
-			string absolutePath = Path.Combine(baseDirectory, configuration.GetSection("pythonFilePath").Value);
+			string absolutePath = Path.Combine(baseDirectory, configuration.GetSection("booksPythonFilename").Value!);
 
+			ProcessStartInfo startInfo = new ProcessStartInfo(pythonInterpreter) {
+				Arguments = $"\"{absolutePath}\"", // 将脚本路径和参数传给Python解释器
+				UseShellExecute = false, // 不使用系统外壳启动进程
+				RedirectStandardOutput = true, // 重定向输出，使输出信息可以在C#中获取
+				CreateNoWindow = true // 不创建新窗口
+			};
 
-
-            ProcessStartInfo startInfo = new ProcessStartInfo(pythonInterpreter)
-            {
-                Arguments = $"\"{absolutePath}\"", // 将脚本路径和参数传给Python解释器
-                UseShellExecute = false, // 不使用系统外壳启动进程
-                RedirectStandardOutput = true, // 重定向输出，使输出信息可以在C#中获取
-                CreateNoWindow = true // 不创建新窗口
-            };
-
-            using (Process process = Process.Start(startInfo))
-            {
-                using (StreamReader reader = process.StandardOutput)
-                {
-                    string result = reader.ReadToEnd(); // 读取Python脚本的输出信息
-                    if (string.IsNullOrEmpty(result))
-                    {
-                        await Console.Out.WriteLineAsync("没有读到数据");
-                        return;
-                    }
-                    List<ReptileData> datas = new List<ReptileData>();  
-                    string[] strs = result.Split('\n');
+			using (Process process = Process.Start(startInfo))
+			{
+				using (StreamReader reader = process.StandardOutput)
+				{
+					string result = reader.ReadToEnd(); // 读取Python脚本的输出信息
+					if (string.IsNullOrEmpty(result))
+					{
+						await Console.Out.WriteLineAsync("没有读到数据");
+						return;
+					}
+					List<Book> datas = new List<Book>();
+					List<Book> updateData = new List<Book>();
+					string[] strs = result.Split('\n');
 					using (var scope = _scopeFactory.CreateScope())
 					{
-						IReptileDataRepository reptileDataRepository = scope.ServiceProvider.GetService<IReptileDataRepository>()!;
+						IBooksRepository booksRepository = scope.ServiceProvider.GetService<IBooksRepository>()!;
 						for (int i = 0; i < strs.Length; i++)
 						{
-                            if (strs[i].Contains("停止遍历"))
-                                break;
-							datas.Add(
-								new ReptileData { BookTitle = GetBookTitle(strs[i]), Clicks = GetBookClicks(strs[i]) });
+							if (strs[i].Contains("停止遍历"))
+								break;
+							Book data = new Book { title = GetBookTitle(strs[i]), Clicks = GetBookClicks(strs[i]) };
+							if (booksRepository.FindByTitle(data.title) == null)
+							{
+								datas.Add(data);
+							} else
+							{
+								updateData.Add(data);
+							}
 						}
-                        int count = await reptileDataRepository.AddOrUpdate(datas);
-                        await Console.Out.WriteLineAsync(DateTime.Now+$" : {count}条数据更新");
-                    }					
-                    //Console.WriteLine(result);
-                }
-            }
-        }
-        public string GetBookTitle(string str)
+						for (int i = 0; i < updateData.Count; i++)
+						{
+							booksRepository.UpdateEntity(updateData[i]);
+						}
+						await booksRepository.AddRangeEntityAsync(datas);
+						int count = await booksRepository.SaveChangesAsync();
+						Console.WriteLine($"Book:{count}条数据更新");
+					}
+
+				}
+			}
+		}
+		#endregion
+
+		#region SchoolNotification
+		public async void ExecuteSchoolNotificationPy()
+		{
+			string pythonInterpreter = configuration.GetSection("pythonInterpreter").Value!;
+
+			// 设置Python脚本的路径
+			string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "Py\\";
+			// 创建文件的绝对路径
+			string absolutePath = Path.Combine(baseDirectory, configuration.GetSection("schoolNotificationPythonFilename").Value!);
+
+			ProcessStartInfo startInfo = new ProcessStartInfo(pythonInterpreter) {
+				Arguments = $"\"{absolutePath}\"", // 将脚本路径和参数传给Python解释器
+				UseShellExecute = false, // 不使用系统外壳启动进程
+				RedirectStandardOutput = true, // 重定向输出，使输出信息可以在C#中获取
+				CreateNoWindow = true // 不创建新窗口
+			};
+
+			using (Process process = Process.Start(startInfo))
+			{
+				using (StreamReader reader = process.StandardOutput)
+				{
+					string result = reader.ReadToEnd(); // 读取Python脚本的输出信息
+					result = result.Replace("'", "\"");
+					if (string.IsNullOrEmpty(result))
+					{
+						await Console.Out.WriteLineAsync("没有读到数据");
+						return;
+					}
+					List<SchoolNotification> datas = new List<SchoolNotification>();
+
+					using (var scope = _scopeFactory.CreateScope())
+					{
+						ISchoolNotificationRepository schoolNotificationRepository = scope.ServiceProvider.GetService<ISchoolNotificationRepository>()!;
+
+						try
+						{
+							datas = JsonSerializer.Deserialize<List<SchoolNotification>>(result);
+						} catch (Exception ex)
+						{
+							Console.WriteLine(ex.Message.ToString());
+						}
+						List<SchoolNotification> updateData = new List<SchoolNotification>();
+						for (int i = 0; i < datas.Count; i++)
+						{
+							if (schoolNotificationRepository.FindByTitle(datas[i].title) != null)
+							{
+								updateData.Add(datas[i]);
+								datas.Remove(datas[i]);
+							}
+						}
+						for (int i = 0; i < updateData.Count; i++)
+						{
+							schoolNotificationRepository.UpdateEntity(updateData[i]);
+						}
+						await schoolNotificationRepository.AddRangeEntityAsync(datas);
+						int count = await schoolNotificationRepository.SaveChangesAsync();
+						Console.WriteLine($"schoolNotification:{count}条数据更新");
+					}
+
+				}
+			}
+		} 
+		#endregion
+
+		#region Lecture
+		public async void ExecuteLecturePy()
+		{
+			string pythonInterpreter = configuration.GetSection("pythonInterpreter").Value!;
+
+			// 设置Python脚本的路径
+			string baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "Py\\";
+			// 创建文件的绝对路径
+			string absolutePath = Path.Combine(baseDirectory, configuration.GetSection("lecturePythonFilename").Value!);
+
+			ProcessStartInfo startInfo = new ProcessStartInfo(pythonInterpreter) {
+				Arguments = $"\"{absolutePath}\"", // 将脚本路径和参数传给Python解释器
+				UseShellExecute = false, // 不使用系统外壳启动进程
+				RedirectStandardOutput = true, // 重定向输出，使输出信息可以在C#中获取
+				CreateNoWindow = true // 不创建新窗口
+			};
+
+			using (Process process = Process.Start(startInfo))
+			{
+				using (StreamReader reader = process.StandardOutput)
+				{
+					string result = reader.ReadToEnd(); // 读取Python脚本的输出信息
+					result = result.Replace("'", "\"");
+					if (string.IsNullOrEmpty(result))
+					{
+						await Console.Out.WriteLineAsync("没有读到数据");
+						return;
+					}
+					List<Lecture> datas = new List<Lecture>();
+
+					using (var scope = _scopeFactory.CreateScope())
+					{
+						ILectureRepository lectureRepository = scope.ServiceProvider.GetService<ILectureRepository>()!;
+
+						try
+						{
+							datas = JsonSerializer.Deserialize<List<Lecture>>(result);
+						} catch (Exception ex)
+						{
+							Console.WriteLine(ex.Message.ToString());
+						}
+						List<Lecture> updateData = new List<Lecture>();
+						for(int i = 0;i< datas.Count; i++)
+						{
+							if (lectureRepository.FindByTitle(datas[i].title) != null)
+							{
+								updateData.Add(datas[i]);
+								datas.Remove(datas[i]);
+							}
+						}
+						for(int i=0;i< updateData.Count; i++)
+						{
+							lectureRepository.UpdateEntity(updateData[i]);
+						}
+
+						await lectureRepository.AddRangeEntityAsync(datas);
+						int count = await lectureRepository.SaveChangesAsync();
+						Console.WriteLine($"Lectrue:{count}条数据更新");
+					}
+
+				}
+			}
+		} 
+		#endregion
+		public string GetBookTitle(string str)
         {
 			string bookPre = str.Substring(5, str.Length - 5);
 			string keyword = " 的";
@@ -111,3 +256,4 @@ namespace MyForum.Api.Py
 		}
 	}
 }
+

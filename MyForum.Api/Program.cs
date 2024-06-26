@@ -6,11 +6,15 @@ using Microsoft.IdentityModel.Tokens;
 using MyForum.Api.Py;
 using MyForum.BLL;
 using MyForum.BLL.Interface;
-using MyForum.DAL;
 using MyForum.DAL.Interface;
+using MyForum.DAL.Repository;
+using MyForum.DAL.ReptileData;
+using MyForum.DAL.ReptileDataInterface;
+using MyForum.DAL.ReptileDataRepository;
 using MyForum.JWT;
 using MyForum.Model;
 using MyForum.Model.DTO;
+using MyForum.Model.ReptlieModel;
 using System.Text;
 
 namespace MyForum.Api
@@ -42,7 +46,9 @@ namespace MyForum.Api
 			builder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
 			builder.Services.AddScoped<ITableReadRepository, TableReadRepository>();
 			builder.Services.AddHostedService<TimedHostedService>();
-			builder.Services.AddScoped<IReptileDataRepository, ReptileDataRepository>();
+			builder.Services.AddScoped<IBooksRepository, BooksRepository>();
+			builder.Services.AddScoped<ILectureRepository, LectureRepository>();
+			builder.Services.AddScoped<ISchoolNotificationRepository, SchoolNotificationRepository>();
 			builder.Services.AddAutoMapper(typeof(OrganizationProfile));
 
 			#region JWT
@@ -66,7 +72,7 @@ namespace MyForum.Api
 			});
 			builder.Services.AddDbContext<ReptileDbContext>(options => {
 				options.UseSqlServer("Server=.;DataBase=MyForum;Trusted_Connection=True;TrustServerCertificate=true;");
-			});
+			}, ServiceLifetime.Transient);
 			string myPloicy = "MyPolicy";
 			builder.Services.AddCors(options => {
 				options.AddPolicy(name: myPloicy, policy => {

@@ -205,11 +205,23 @@ namespace MyForum.Api.Controllers
 		}
 
 		[HttpPost("user/settings/profile")]
-		public async Task<APIResult> Profile([FromForm] string? email, [FromForm] string? website, [FromForm] string? bio, [FromForm] string? avatar)
+		public async Task<APIResult> Profile([FromForm] string? email, [FromForm] string? website, [FromForm] string? bio, [FromForm] IFormFile? avatar)
 		{
+			User user = await GetUser();
 			var sanitizer = new HtmlSanitizer();
 			sanitizer.AllowedTags.Clear(); // 确保没有允许的标签，类似于Whitelist.none()
-			User user = await GetUser();
+			if (avatar == null || avatar.Length == 0)
+			{
+				return APIResultHelper.Error("请上传文件");
+			}
+			string base64String;
+			using (var memoryStream = new MemoryStream())
+			{
+				await avatar.CopyToAsync(memoryStream);
+				byte[] fileBytes = memoryStream.ToArray();
+				base64String = Convert.ToBase64String(fileBytes);
+			}
+			user.Avatar = base64String;
 			if (!string.IsNullOrEmpty(email))
 			{
 				User _user = await _userService.FindByUserEmail(email);
@@ -229,11 +241,6 @@ namespace MyForum.Api.Controllers
 			{
 				var cleanBio = sanitizer.Sanitize(bio);
 				user.Bio = cleanBio;
-			}
-			if (!string.IsNullOrEmpty(avatar))
-			{
-				var cleanAvatar = sanitizer.Sanitize(avatar);
-				user.Avatar = cleanAvatar;
 			}
 			await _userService.EditAsync(user);
 			return APIResultHelper.Success();

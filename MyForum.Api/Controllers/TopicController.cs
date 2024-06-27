@@ -172,9 +172,9 @@ namespace MyForum.Api.Controllers
 			return APIResultHelper.Success();
 		}
 
-		[HttpGet("good")]
+		[HttpPost("good")]
 		[Authorize]
-		public async Task<APIResult> Good(int id)
+		public async Task<APIResult> Good([FromForm]int id)
 		{
 			User user = await GetUser();
 			Topic oldTopic = await _topicService.FindAsync(id);
@@ -210,9 +210,9 @@ namespace MyForum.Api.Controllers
 			}
 		}
 
-		[HttpGet("top")]
+		[HttpPost("top")]
 		[Authorize]
-		public async Task<APIResult> Top(int id)
+		public async Task<APIResult> Top([FromForm] int id)
 		{
 			User user = await GetUser();
 			Topic topic = await _topicService.FindAsync(id);

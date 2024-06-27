@@ -138,7 +138,7 @@ namespace MyForum.Api.Controllers
 			{
 				topic.User = user;
 			}
-			return APIResultHelper.Success(page);
+			return APIResultHelper.Success(new { last = true, content = page });
 		}
 
 		[HttpGet("user/{username}/comments")]
@@ -163,7 +163,7 @@ namespace MyForum.Api.Controllers
 					comment.SecondComment = await commentService.FindAsync(comment.CommentId.Value);
 				}
 			}
-			return APIResultHelper.Success(page);
+			return APIResultHelper.Success(new { last = true, content = page });
 		}
 
 		[HttpGet("user/{username}/collects")]
@@ -184,7 +184,7 @@ namespace MyForum.Api.Controllers
 				collect.User = user;
 				collect.Topic = await topicService.FindAsync(collect.TopicId.Value);
 			}
-			return APIResultHelper.Success(page);
+			return APIResultHelper.Success(new { last = true, content = page });
 		}
 
 		[HttpGet("user/settings/profile")]

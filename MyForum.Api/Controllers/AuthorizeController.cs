@@ -210,7 +210,7 @@ namespace MyForum.Api.Controllers
 			User user = await GetUser();
 			var sanitizer = new HtmlSanitizer();
 			sanitizer.AllowedTags.Clear(); // 确保没有允许的标签，类似于Whitelist.none()
-			if(avatar != null)
+			if(!string.IsNullOrEmpty(avatar))
 			{
 				user.Avatar = avatar;
 			} else

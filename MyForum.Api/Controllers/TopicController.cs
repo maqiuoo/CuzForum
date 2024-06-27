@@ -56,8 +56,8 @@ namespace MyForum.Api.Controllers
 			}
 			topic.View += 1;
 			
-			User user = await GetUserForTopicDetail();
-			if(user != null && _collectService.FindByUserIdAndTopicId(user.Id, id) != null)
+			User user = await GetUser();
+			if(user != null && await _collectService.FindByUserIdAndTopicId(user.Id, id) != null)
 			{
 				dic.Add("collect", true);
 			} else

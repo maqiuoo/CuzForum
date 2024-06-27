@@ -29,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Py\books.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Py\lecture.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

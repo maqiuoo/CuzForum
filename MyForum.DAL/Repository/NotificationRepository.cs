@@ -36,7 +36,8 @@ namespace MyForum.DAL.Repository
                     Read = false
                 };
                 dbctx.Notifications.Add(notification);
-                return await dbctx.SaveChangesAsync() > 0;
+                await dbctx.SaveChangesAsync();
+                return true;
             }
             else
             { return false; }

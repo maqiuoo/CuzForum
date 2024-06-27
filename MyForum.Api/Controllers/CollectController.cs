@@ -46,12 +46,12 @@ namespace MyForum.Api.Controllers
 				return APIResultHelper.Success();
 			} else
 			{
-				return APIResultHelper.Error("出现错误");
+				return APIResultHelper.Success("不能收藏自己的话题");
 			}
 		}
 		[HttpPost]
 		[Route("delete")]
-		public async Task<APIResult> Delete(int topicId)
+		public async Task<APIResult> Delete([FromForm]int topicId)
 		{
 			User user = await GetUser();
 			Topic topic = await topicService.FindAsync(topicId);

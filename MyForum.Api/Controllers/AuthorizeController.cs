@@ -156,7 +156,7 @@ namespace MyForum.Api.Controllers
 			var page = await commentService.FindByUserId(user.Id, pageNo, pageSize);
 			foreach(var comment in page)
 			{
-				comment.User = user;
+				//comment.User = user;
 				comment.Topic = await topicService.FindAsync(comment.TopicId.Value);
 				if (comment.CommentId.HasValue)
 				{
@@ -181,7 +181,7 @@ namespace MyForum.Api.Controllers
 			var page = await collectService.FindByUserId(user.Id, pageNo, pageSize);
 			foreach(var collect in page)
 			{
-				collect.User = user;
+				//collect.User = user;
 				collect.Topic = await topicService.FindAsync(collect.TopicId.Value);
 			}
 			return APIResultHelper.Success(new { last = true, content = page });

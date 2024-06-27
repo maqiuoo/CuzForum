@@ -122,7 +122,7 @@ namespace MyForum.Api.Controllers
 		}
 
 		[HttpGet("user/{username}/topics")]
-		public async Task<APIResult> Topics(string username,int pageSize, int pageNo = 1)
+		public async Task<APIResult> Topics(string username,int pageSize = 7, int pageNo = 1)
 		{
 			if(pageSize > int.Parse(_configuration.GetSection("site").GetSection("pageSize").Value!))
 			{
@@ -142,7 +142,7 @@ namespace MyForum.Api.Controllers
 		}
 
 		[HttpGet("user/{username}/comments")]
-		public async Task<APIResult> Comments(string username,int pageSize, int pageNo = 1)
+		public async Task<APIResult> Comments(string username,int pageSize = 7, int pageNo = 1)
 		{
 			if (pageSize > int.Parse(_configuration.GetSection("site").GetSection("pageSize").Value!))
 			{
@@ -167,7 +167,7 @@ namespace MyForum.Api.Controllers
 		}
 
 		[HttpGet("user/{username}/collects")]
-		public async Task<APIResult> Collects(string username,int pageSize, int pageNo = 1)
+		public async Task<APIResult> Collects(string username,int pageSize = 7, int pageNo = 1)
 		{
 			if (pageSize > int.Parse(_configuration.GetSection("site").GetSection("pageSize").Value!))
 			{

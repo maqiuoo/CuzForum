@@ -205,19 +205,15 @@ namespace MyForum.Api.Controllers
 		}
 
 		[HttpPost("user/settings/profile")]
-		public async Task<APIResult> Profile([FromForm] string? email, [FromForm] string? website, [FromForm] string? bio, IFormFile avatar)
+		public async Task<APIResult> Profile([FromForm] string? email, [FromForm] string? website, [FromForm] string? bio, [FromForm] string? avatar)
 		{
 			User user = await GetUser();
 			var sanitizer = new HtmlSanitizer();
 			sanitizer.AllowedTags.Clear(); // 确保没有允许的标签，类似于Whitelist.none()
-			string base64String;
-			using (var memoryStream = new MemoryStream())
+			if(avatar != null)
 			{
-				await avatar.CopyToAsync(memoryStream);
-				byte[] fileBytes = memoryStream.ToArray();
-				base64String = Convert.ToBase64String(fileBytes);
-			}
-			user.Avatar = base64String;
+				user.Avatar = avatar;
+			}		
 			if (!string.IsNullOrEmpty(email))
 			{
 				User _user = await _userService.FindByUserEmail(email);

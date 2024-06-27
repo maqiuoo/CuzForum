@@ -213,6 +213,9 @@ namespace MyForum.Api.Controllers
 			if(avatar != null)
 			{
 				user.Avatar = avatar;
+			} else
+			{
+				return APIResultHelper.Error("avatar为空");
 			}		
 			if (!string.IsNullOrEmpty(email))
 			{

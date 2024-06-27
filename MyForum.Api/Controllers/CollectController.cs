@@ -23,7 +23,7 @@ namespace MyForum.Api.Controllers
 		}
 		[HttpPost]
 		[Route("save")]
-		public async Task<APIResult> Save(int topicId)
+		public async Task<APIResult> Save([FromBody]int topicId)
 		{
 			User user = await GetUser();
 			Topic topic = await topicService.FindAsync(topicId);

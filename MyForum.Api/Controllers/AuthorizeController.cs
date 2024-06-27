@@ -213,10 +213,7 @@ namespace MyForum.Api.Controllers
 			if(!string.IsNullOrEmpty(avatar))
 			{
 				user.Avatar = avatar;
-			} else
-			{
-				return APIResultHelper.Error("avatar为空");
-			}		
+			}	
 			if (!string.IsNullOrEmpty(email))
 			{
 				User _user = await _userService.FindByUserEmail(email);
@@ -238,7 +235,7 @@ namespace MyForum.Api.Controllers
 				user.Bio = cleanBio;
 			}
 			await _userService.EditAsync(user);
-			return APIResultHelper.Success();
+			return APIResultHelper.Success(user);
 		}
 
 		[HttpPost("user/settings/updatePassword")]

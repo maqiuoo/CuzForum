@@ -69,6 +69,7 @@ namespace MyForum.Api.Controllers
 				await _userService.EditAsync(user);
 				comment.User = user;
 				topic.CommentCount++;
+				await topicService.EditAsync(topic);
 				return APIResultHelper.Success(comment);
 			} else
 			{

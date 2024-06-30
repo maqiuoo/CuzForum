@@ -91,7 +91,7 @@ class CreateTopic extends Component {
             </tr>
             <tr>
               <th valign="top">内容</th>
-              <td><textarea ref="content" className="form-content" placeholder="话题内容，支持Markdown语法"></textarea></td>
+              <td><textarea ref="content" className="form-content" placeholder="话题内容"></textarea></td>
             </tr>
             <tr>
               <th valign="top">&nbsp;</th>

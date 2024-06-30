@@ -23,7 +23,7 @@ class UserProfile extends Component {
   }
 
   componentDidMount() {
-    // 加载用户信息
+    // Load user info
     Axios.get('/user/' + this.state.username)
       .then(({ data }) => {
         if (data.code === 200) {
@@ -36,7 +36,8 @@ class UserProfile extends Component {
         }
       })
       .catch(err => this.props.dispatch(showToast(err.toString())));
-    // 加载用户的话题
+
+    // Load user topics
     Axios.get('/user/' + this.state.username + '/topics', {
       params: {
         pageNo: 1,
@@ -44,11 +45,16 @@ class UserProfile extends Component {
       }
     }).then(({ data }) => {
       if (data.code === 200) {
+        // console.log("detail:",data.detail); // Log the response to inspect it
+        // console.log("username:", this.state.username);
+
         this.setState({
           loading_topics: false,
           topics: this.state.topics.concat(data.detail.content)
         })
       } else {
+        // console.log("username:", this.state.username);
+
         this.setState({
           loading_topics: false
         })
@@ -57,7 +63,8 @@ class UserProfile extends Component {
     }).catch(err => {
       this.props.dispatch(showToast(err.toString()))
     });
-    // 加载用户的评论
+
+    // Load user comments
     Axios.get('/user/' + this.state.username + '/comments', {
       params: {
         pageNo: 1,
@@ -65,11 +72,15 @@ class UserProfile extends Component {
       }
     }).then(({ data }) => {
       if (data.code === 200) {
+        // console.log("username:", this.state.username);
+
         this.setState({
           loading_comments: false,
           comments: this.state.comments.concat(data.detail.content)
         })
       } else {
+        // console.log("username:", this.state.username);
+
         this.setState({
           loading_comments: false
         })
@@ -77,40 +88,92 @@ class UserProfile extends Component {
       }
     }).catch(err => this.props.dispatch(showToast(err.toString())));
   }
+
   render() {
     let topicsHtml;
+
     if (this.state.topics.length > 0) {
-      topicsHtml = this.state.topics.map((v, i) => {
-        return (
-          <tr key={i}>
-            <td width="80%"><Link to={'/topic/' + v.id}>{v.title}</Link></td>
-            <td>{moment(v.inTime).fromNow()}</td>
+      // console.log("topics:",this.state.topics); // Log the topics to inspect them
+      // 过滤掉未定义的元素并记录它们
+      const validTopics = this.state.topics.filter((topic, index) => {
+        if (topic === undefined) {
+          console.error(`Topic at index ${index} is undefined:`, topic);
+          return false;
+        }
+        return true;
+      });
+
+      if (validTopics.length > 0) {
+        topicsHtml = validTopics.map((v, i) => {
+          if (!v.id) {
+            console.error('Topic is missing id:', v); // Log the problematic topic
+            return null; // Skip rendering this topic
+          }
+          return (
+            <tr key={i}>
+              <td width="80%"><Link to={'/topic/' + v.id}>{v.title}</Link></td>
+              <td>{moment(v.inTime).fromNow()}</td>
+            </tr>
+          );
+        }).filter(topic => topic !== null); // Filter out null entries
+      } else {
+        topicsHtml = (
+          <tr>
+            <td colSpan="2">暂无话题</td>
           </tr>
-        )
-      })
+        );
+      }
     } else {
       topicsHtml = (
         <tr>
           <td colSpan="2">暂无话题</td>
         </tr>
-      )
+      );
     }
+
     let commentsHtml;
+
     if (this.state.comments.length > 0) {
-      commentsHtml = this.state.comments.map((v, i) => {
-        return (
-          <tr key={i}>
-            <td width="80%"><Link to={'/topic/' + v.id}>{v.topic.title}</Link></td>
-            <td>{moment(v.inTime).fromNow()}</td>
+      // 过滤掉未定义的元素并记录它们
+      const validComments = this.state.comments.filter((comment, index) => {
+        if (comment === undefined) {
+          console.error(`Comment at index ${index} is undefined:`, comment);
+          return false;
+        }
+        return true;
+      });
+
+      if (validComments.length > 0) {
+        // console.log("validComments",validComments); // Log the valid comments to inspect them
+        commentsHtml = validComments.map((v, i) => {
+          if (!v.id) {
+            console.error('Comment is missing id', v); // Log the problematic comment
+            return null; // Skip rendering this comment
+          }
+          if (!v.topic) {
+            console.error('Comment is missing topic:', v); // Log the problematic comment
+            return null; // Skip rendering this comment
+          }
+          return (
+            <tr key={i}>
+              <td width="80%"><Link to={'/topic/' + v.topicId}>{v.content}({v.topic.title})</Link></td>
+              <td>{moment(v.inTime).fromNow()}</td>
+            </tr>
+          );
+        }).filter(comment => comment !== null); // Filter out null entries
+      } else {
+        commentsHtml = (
+          <tr>
+            <td colSpan="2">暂无评论</td>
           </tr>
-        )
-      })
+        );
+      }
     } else {
       commentsHtml = (
         <tr>
           <td colSpan="2">暂无评论</td>
         </tr>
-      )
+      );
     }
     return (
       <div>
@@ -123,7 +186,8 @@ class UserProfile extends Component {
                 {
                   this.state.info
                     ? <div>
-                      <img src={this.state.info.avatar ? this.state.info.avatar : DefaultAvatar} className="avatar-lg" alt="avatar" />
+                      {/* <img src={this.state.info.avatar ? this.state.info.avatar : DefaultAvatar} className="avatar-lg" alt="avatar" /> */}
+                      <img src={this.state.info.avatar ? `data:image/png;base64,${this.state.info.avatar}` : DefaultAvatar} className="avatar-lg" alt="avatar" />
                       <ul className="profile">
                         <li>积分 {this.state.info.score}&nbsp;&nbsp;<Link to="/top100">TOP100</Link></li>
                         <li className="username">{this.state.info.username}</li>

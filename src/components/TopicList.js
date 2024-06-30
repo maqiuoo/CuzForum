@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import DefaultAvatar from '../imgs/default-avatar.jpg';
-
 class TopicList extends Component {
   render() {
+    console.log("topics:",this.props);
     return (
       <div>
         {
+
           this.props.topics.map(function (v, i) {
+            // console.log("topiclist:",v);
             let tab = "";
             if (v.tab === "ask") {
               tab = "问答"
@@ -28,7 +30,8 @@ class TopicList extends Component {
             }
             return (
               <li key={i}>
-                <img src={v.user.avatar ? v.user.avatar : DefaultAvatar} className="avatar" alt="avatar" />
+                {/* <img src={v.user.avatar ? v.user.avatar : DefaultAvatar} className="avatar" alt="avatar" /> */}
+                <img src={v.user.avatar ? `data:image/png;base64,${v.user.avatar}` : DefaultAvatar} className="avatar" alt="avatar" />
                 <div className="topic">
                   <div className="title">
                     {
@@ -79,5 +82,4 @@ class TopicList extends Component {
     )
   }
 }
-
 export default TopicList

@@ -19,7 +19,7 @@ class Top100 extends Component {
   componentWillMount() {
     Axios.get('/top100')
       .then(({ data }) => {
-        if(data.code === 200) {
+        if (data.code === 200) {
           this.setState({
             loading: false,
             users: data.detail
@@ -37,19 +37,19 @@ class Top100 extends Component {
           <tbody>
             {
               this.state.users.length > 0
-              ? this.state.users.map(function(v, i) {
-                return (
-                  <tr key={i}>
-                    <td><img src={v.avatar ? v.avatar : DefaultAvatar} className="avatar" alt="avatar" /></td>
-                    <td><Link to={'/user/' + v.username}>{v.username}</Link></td>
-                    <td>{v.email}</td>
-                    <td>{v.website}</td>
-                    <td>{moment(v.inTime).fromNow()}</td>
-                    <td>{v.score}</td>
-                  </tr>
-                )
-              })
-              : <Loading/>
+                ? this.state.users.map(function (v, i) {
+                  return (
+                    <tr key={i}>
+                      <td><img src={v.avatar ? `data:image/png;base64,${v.avatar}` : DefaultAvatar} className="avatar" alt="avatar" /></td>
+                      <td><Link to={'/user/' + v.username}>{v.username}</Link></td>
+                      <td>{v.email}</td>
+                      <td>{v.website}</td>
+                      <td>{moment(v.inTime).fromNow()}</td>
+                      <td>{v.score}</td>
+                    </tr>
+                  )
+                })
+                : <Loading />
             }
           </tbody>
         </table>
@@ -59,5 +59,5 @@ class Top100 extends Component {
 }
 
 export default connect((state) => {
-  return { }
+  return {}
 })(withRouter(Top100))

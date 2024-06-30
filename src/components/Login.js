@@ -36,7 +36,7 @@ class Login extends Component {
           console.log(data.detail);
           localStorage.setItem("accessToken", data.detail.token);
           localStorage.setItem("username", username);
-          localStorage.setItem("admin", data.detail.admin);
+          localStorage.setItem("isAdmin", data.detail.isAdmin);
           Axios.defaults.headers.common['Authorization'] = "Bearer " + data.detail.token
           this.props.updateHeader();
           this.setState({

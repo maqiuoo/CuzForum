@@ -14,7 +14,7 @@ class CommentList extends Component {
     this.state = {
       loading: true,
       username: localStorage.getItem("username"),
-      admin: localStorage.getItem("admin"),
+      isAdmin: localStorage.getItem("isAdmin"),
       topicId: this.props.topicId,
       replyId: '',
       comments: this.props.comments,
@@ -132,11 +132,12 @@ class CommentList extends Component {
                     return (
                       <div key={i} ref={v.id} id={v.id} reply-id={v.commentId}>
                         <div className="comment-info">
-                          <img src={v.user.avatar ? v.user.avatar : DefaultAvatar} className="avatar" alt="avatar" />
+                      <img src={v.user.avatar ? `data:image/png;base64,${v.user.avatar}` : DefaultAvatar} className="avatar" alt="avatar" />
+
                           <span><Link to={'/user/' + v.user.username}>{v.user.username}</Link></span>&nbsp;
                           <span>{moment(v.inTime).fromNow()}</span>&nbsp;
                           {
-                            v.user.username === this.state.username || this.state.admin === 'true'
+                            v.user.username === this.state.username || this.state.isAdmin === 'true'
                             ? <span>
                                 <span onClick={() => this.updateHandler(v.id, i, v.content)}>编辑</span>&nbsp;
                                 <span onClick={() => this.deleteHandler(v.id, i)}>删除</span>&nbsp;

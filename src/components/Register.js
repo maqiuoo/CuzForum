@@ -30,7 +30,7 @@ class Register extends Component {
         if (data.detail && typeof data.detail.token !== 'undefined') {
           localStorage.setItem("accessToken", data.detail.token);
           localStorage.setItem("username", username);
-          localStorage.setItem("admin", data.detail.admin);
+          localStorage.setItem("isAdmin", data.detail.isAdmin);
           this.props.dispatch(updateHeader());
           Axios.defaults.headers.common['Authorization'] = "Bearer " + data.detail.token;
           this.setState({ enable_redirect: true });

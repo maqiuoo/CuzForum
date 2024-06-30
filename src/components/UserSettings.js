@@ -30,7 +30,7 @@ class UserSettings extends Component {
               loading: false,
               user: data.detail
             });
-            localStorage.setItem("admin", data.detail.admin);
+            localStorage.setItem("isAdmin", data.detail.isAdmin);
           } else {
             this.props.dispatch(showToast(data.description))
           }
@@ -38,22 +38,42 @@ class UserSettings extends Component {
     }
   }
   save() {
-    const avatar = this.refs.avatar.value;
     const email = this.refs.email.value;
     const website = this.refs.website.value;
     const bio = this.refs.bio.value;
-    Axios.post("/user/settings/profile", {
-      avatar: avatar,
-      email: email,
-      website: website,
-      bio: bio
-    }).then(({ data }) => {
-      if (data.code === 200) {
-        this.props.dispatch(showToast('修改成功'));
-      } else {
-        this.props.dispatch(showToast(data.description));
-      }
-    }).catch(err => this.props.dispatch(showToast(err.toString())))
+    const avatar = this.refs.avatar.files[0];
+  
+    if (avatar && !avatar.type.startsWith('image/')) {
+      this.props.dispatch(showToast('头像必须是图片格式'));
+      return;
+    }
+  
+  
+    if (avatar) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result.split(',')[1]; // 去掉前缀
+  
+
+  
+        Axios.post("/user/settings/profile",  {
+          email: email,
+          website: website,
+          bio: bio,
+          avatar: base64String,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+        }).then(({ data }) => {
+          if (data.code === 200) {
+            this.props.dispatch(showToast('修改成功'));
+          } else {
+            this.props.dispatch(showToast(data.description));
+          }
+        }).catch(err => this.props.dispatch(showToast(err.toString())));
+      };
+      reader.readAsDataURL(avatar); // 读取文件并转换为Base64
+    } 
   }
   updatePassword() {
     const rawPassword = this.refs.rawPassword.value;
@@ -84,8 +104,8 @@ class UserSettings extends Component {
       <section className="animated fadeIn user-settings">
         {
           this.state.loading
-          ? <Loading/>
-          : <div className="user-settings">
+            ? <Loading />
+            : <div className="user-settings">
               {
                 this.state.enable_redirect
                   ? <Redirect to={this.state.redirect_url} />
@@ -100,19 +120,19 @@ class UserSettings extends Component {
                   </tr>
                   <tr>
                     <th>邮箱</th>
-                    <td><input type="email" ref="email" value={this.state.user.email} /></td>
+                    <td><input type="email" ref="email" defaultValue={this.state.user.email} /></td>
                   </tr>
                   <tr>
                     <th>头像</th>
-                    <td><input type="text" ref="avatar" value={this.state.user.avatar} /></td>
+                    <td><input type="file" ref="avatar" accept="image/*" /></td>
                   </tr>
                   <tr>
                     <th>个人主页</th>
-                    <td><input type="text" ref="website" value={this.state.user.website} /></td>
+                    <td><input type="text" ref="website" defaultValue={this.state.user.website} /></td>
                   </tr>
                   <tr>
                     <th valign="top">个人简介</th>
-                    <td><textarea ref="bio" rows="5">{this.state.user.bio}</textarea></td>
+                    <td><textarea ref="bio" rows="5" defaultValue={this.state.user.bio}></textarea></td>
                   </tr>
                   <tr>
                     <td colSpan="2" align="right">

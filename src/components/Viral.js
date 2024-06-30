@@ -39,10 +39,10 @@ class Viral extends Component {
         return (
             <div className="box-centered-container">
                 <WordCloud type="books" />
-                {/* <div className="list-centered-container">
+                <div className="list-centered-container">
                     <ListInformation type="lectures" />
                     <ListInformation type="notification" />
-                </div> */}
+                </div>
             </div>
         );
     }

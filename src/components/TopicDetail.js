@@ -15,7 +15,7 @@ class TopicDetail extends Component {
     this.state = {
       id: this.props.match.params.id,
       username: localStorage.getItem("username"),
-      admin: localStorage.getItem("admin"),
+      isAdmin: localStorage.getItem("isAdmin"),
       loading: true,
       topic: {},
       collect: false,
@@ -51,13 +51,14 @@ class TopicDetail extends Component {
   }
   collect() {
     let collect_url = "/collect/save";
-    if (this.state.collect){
+    if (this.state.collect) {
       collect_url = "/collect/delete";
     }
     Axios.post(collect_url, {
       topicId: this.state.id
-    }).then(({data}) => {
-      if(data.code === 200) {
+    }).then(({ data }) => {
+      // console.log(this.state.id)
+      if (data.code === 200) {
         this.setState({
           collect: !this.state.collect
         })
@@ -78,8 +79,8 @@ class TopicDetail extends Component {
         params: {
           id: this.state.id
         }
-      }).then(({data}) => {
-        if(data.code === 200) {
+      }).then(({ data }) => {
+        if (data.code === 200) {
           this.setState({
             enable_redirect: true
           })
@@ -92,8 +93,8 @@ class TopicDetail extends Component {
   topTopic() {
     Axios.post('/topic/top', {
       id: this.state.id
-    }).then(({data}) => {
-      if(data.code === 200) {
+    }).then(({ data }) => {
+      if (data.code === 200) {
         this.setState({
           top: !this.state.top
         })
@@ -105,8 +106,8 @@ class TopicDetail extends Component {
   goodTopic() {
     Axios.post('/topic/good', {
       id: this.state.id
-    }).then(({data}) => {
-      if(data.code === 200) {
+    }).then(({ data }) => {
+      if (data.code === 200) {
         this.setState({
           good: !this.state.good
         })
@@ -130,8 +131,8 @@ class TopicDetail extends Component {
       <section className="animated fadeIn">
         {
           this.state.enable_redirect
-          ? <Redirect to={this.state.redirect_url}/>
-          : null
+            ? <Redirect to={this.state.redirect_url} />
+            : null
         }
         {
           this.state.loading
@@ -141,12 +142,12 @@ class TopicDetail extends Component {
                 <div className="topic-detail">
                   <div className="topic">
                     <div className="title">
-                      {this.state.topic.top ? <span className="top-good">[顶]</span>: null}
-                      {this.state.topic.good ? <span className="top-good">[精]</span>: null}
+                      {this.state.topic.top ? <span className="top-good">[顶]</span> : null}
+                      {this.state.topic.good ? <span className="top-good">[精]</span> : null}
                       {
                         this.state.topic.url
-                        ? <a href={this.state.topic.url} target="_blank">{this.state.topic.title}</a>
-                        : this.state.topic.title
+                          ? <a href={this.state.topic.url} target="_blank">{this.state.topic.title}</a>
+                          : this.state.topic.title
                       }
                     </div>
                     <div className="topic-info">
@@ -156,37 +157,38 @@ class TopicDetail extends Component {
                       <span>{moment(this.state.topic.inTime).fromNow()}</span>
                       {
                         this.state.username
-                        ? <span className="topic-actions">
-                            &nbsp;•&nbsp;<span onClick={() => this.collect()}>{this.state.collect ? '取消收藏': '收藏'}</span>
+                          ? <span className="topic-actions">
+                            &nbsp;•&nbsp;<span onClick={() => this.collect()}>{this.state.collect ? '取消收藏' : '收藏'}</span>
                             {
-                              this.state.topicUser.username === this.state.username || this.state.admin === 'true'
-                              ? <span>
+                              this.state.topicUser.username === this.state.username || this.state.isaAdmin === 'true'
+                                ? <span>
                                   &nbsp;•&nbsp;<span onClick={() => this.editTopic()}>编辑</span>
                                   &nbsp;•&nbsp;<span onClick={() => this.deleteHandler()}>删除</span>
                                 </span>
-                              : null
+                                : null
                             }
                             {
-                              this.state.admin === 'true'
-                              ? <span>
-                                  &nbsp;•&nbsp;<span onClick={this.topTopic.bind(this)}>{this.state.top ? '取消置顶': '置顶'}</span>
-                                  &nbsp;•&nbsp;<span onClick={this.goodTopic.bind(this)}>{this.state.good ? '取消加精': '加精'}</span>
+                              this.state.isAdmin === 'true'
+                                ? <span>
+                                  &nbsp;•&nbsp;<span onClick={this.topTopic.bind(this)}>{this.state.top ? '取消置顶' : '置顶'}</span>
+                                  &nbsp;•&nbsp;<span onClick={this.goodTopic.bind(this)}>{this.state.good ? '取消加精' : '加精'}</span>
                                 </span>
-                              : null
+                                : null
                             }
                           </span>
-                        : null
+                          : null
                       }
                     </div>
                   </div>
-                  <img src={this.state.topicUser.avatar ? this.state.topicUser.avatar : DefaultAvatar} className="avatar" alt="avatar" />
+                  <img src={this.state.topicUser.avatar ? `data:image/png;base64,${this.state.topicUser.avatar}` : DefaultAvatar} className="avatar" alt="avatar" />
+
                 </div>
                 {
                   this.state.topic.content
-                  ? <div className="topic-content" dangerouslySetInnerHTML={{__html: this.state.topic.content}}></div>
-                  : null
+                    ? <div className="topic-content" dangerouslySetInnerHTML={{ __html: this.state.topic.content }}></div>
+                    : null
                 }
-                <CommentList comments={this.state.comments} topicId={this.state.topic.id}/>
+                <CommentList comments={this.state.comments} topicId={this.state.topic.id} />
               </div>
             )
         }

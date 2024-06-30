@@ -17,7 +17,8 @@ class UserComments extends Component {
     this.props.dispatch(saveState(document.documentElement.scrollTop));
   }
   loadMore() {
-    this.props.dispatch(loadMore(this.props.comments.username, this.props.comments.pageNo));
+    const { username } = this.props.match.params; // 从路由参数中获取 username
+    this.props.dispatch(loadMore(username, this.props.comments.pageNo));
   }
   render() {
     return (
@@ -33,9 +34,9 @@ class UserComments extends Component {
               <InfiniteScroll
                 pageStart={1}
                 hasMore={this.props.comments.hasMore}
-                loader={<Loading key={1}/>}
+                loader={<Loading key={1} />}
                 loadMore={this.loadMore.bind(this)}>
-                <TopicList topics={this.props.comments.topics}/>
+                <TopicList topics={this.props.comments.topics} />
               </InfiniteScroll>
             </ul>
             {

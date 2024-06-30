@@ -12,12 +12,14 @@ class UserTopics extends Component {
       this.loadMore();
     }
     document.documentElement.scrollTop = this.props.topics.scrollPosition;
+    console.log("this:", this.props.topics)
   }
   componentWillUnmount() {
     this.props.dispatch(saveState(document.documentElement.scrollTop));
   }
   loadMore() {
-    this.props.dispatch(loadMore(this.props.topics.username, this.props.topics.pageNo));
+    const { username } = this.props.match.params; // 从路由参数中获取 username
+    this.props.dispatch(loadMore(username, this.props.topics.pageNo));
   }
   render() {
     return (
@@ -33,9 +35,9 @@ class UserTopics extends Component {
               <InfiniteScroll
                 pageStart={1}
                 hasMore={this.props.topics.hasMore}
-                loader={<Loading key={1}/>}
+                loader={<Loading key={1} />}
                 loadMore={this.loadMore.bind(this)}>
-                <TopicList topics={this.props.topics.topics}/>
+                <TopicList topics={this.props.topics.topics} />
               </InfiniteScroll>
             </ul>
             {

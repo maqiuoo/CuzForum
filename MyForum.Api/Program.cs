@@ -15,6 +15,7 @@ using MyForum.JWT;
 using MyForum.Model.DTO;
 using MyForum.Model.Model;
 using MyForum.Model.ReptlieModel;
+using System.Reflection;
 using System.Text;
 
 namespace MyForum.Api
@@ -51,6 +52,12 @@ namespace MyForum.Api
 			builder.Services.AddScoped<ISchoolNotificationRepository, SchoolNotificationRepository>();
 			builder.Services.AddAutoMapper(typeof(OrganizationProfile));
 
+			builder.Services.AddSwaggerGen(c => {
+				c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "jwtswagger", Version = "v1" });
+				var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+				var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+				c.IncludeXmlComments(xmlPath,true);
+			});
 			#region JWT
 			builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWT"));
 			builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -85,7 +92,9 @@ namespace MyForum.Api
 			if (app.Environment.IsDevelopment())
 			{
 				app.UseSwagger();
-				app.UseSwaggerUI();
+				app.UseSwaggerUI(x=> {
+					x.SwaggerEndpoint("/swagger/v1/swagger.json", "JwtSwagger Api");
+				});
 			}
 			app.UseStaticFiles();
 			app.UseRouting();

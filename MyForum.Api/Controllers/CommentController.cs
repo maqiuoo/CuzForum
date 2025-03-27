@@ -92,7 +92,7 @@ namespace MyForum.Api.Controllers
 			{
 				admins.Add(section.Value);
 			}
-			if (user.Id != comment.UserId || (admins.Count > 0 && !admins.Contains(user.Username)))
+			if (user.Id != comment.UserId && (admins.Count > 0 && !admins.Contains(user.Username)))
 			{
 				return APIResultHelper.Error("不能修改别人的评论");
 			}
@@ -126,7 +126,7 @@ namespace MyForum.Api.Controllers
 			{
 				admins.Add(section.Value);
 			}
-			if (user.Id != comment.UserId || (admins.Count > 0 && !admins.Contains(user.Username)))
+			if (user.Id != comment.UserId && (admins.Count > 0 && !admins.Contains(user.Username)))
 			{
 				return APIResultHelper.Error("不能删除别人的评论");
 			}

@@ -122,7 +122,7 @@ namespace MyForum.Api.Controllers
 			{
 				admins.Add(section.Value);
 			}
-			if (user.Id != oldTopic.UserId||(admins.Count > 0 && !admins.Contains(user.Username)))
+			if (user.Id != oldTopic.UserId && (admins.Count > 0 && !admins.Contains(user.Username)))
 			{
 				return APIResultHelper.Error("无权更改话题");
 			}
@@ -156,7 +156,7 @@ namespace MyForum.Api.Controllers
 			{
 				admins.Add(section.Value);
 			}
-			if (user.Id != topic.UserId || (admins.Count > 0 && !admins.Contains(user.Username)))
+			if (user.Id != topic.UserId && (admins.Count > 0 && !admins.Contains(user.Username)))
 			{
 				return APIResultHelper.Error("无权删除话题");
 			}
@@ -186,7 +186,7 @@ namespace MyForum.Api.Controllers
 			{
 				admins.Add(section.Value);
 			}
-			if (user.Id != oldTopic.UserId || (admins.Count > 0 && !admins.Contains(user.Username)))
+			if (user.Id != oldTopic.UserId && (admins.Count > 0 && !admins.Contains(user.Username)))
 			{
 				return APIResultHelper.Error("无权");
 			}
@@ -224,7 +224,7 @@ namespace MyForum.Api.Controllers
 			{
 				admins.Add(section.Value);
 			}
-			if (user.Id != topic.UserId || (admins.Count > 0 && !admins.Contains(user.Username)))
+			if (user.Id != topic.UserId && (admins.Count > 0 && !admins.Contains(user.Username)))
 			{
 				return APIResultHelper.Error("无权");
 			}
